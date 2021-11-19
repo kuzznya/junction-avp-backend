@@ -26,4 +26,5 @@ public class UserEntity {
     String email;
     @With
     String password;
+    Long teamId;
 }

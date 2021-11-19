@@ -1,16 +1,16 @@
 package com.javaica.avp.entity;
 
-import lombok.AllArgsConstructor;
+import com.javaica.avp.model.TaskBlockType;
 import lombok.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table("team")
+@Table("checkpoint_block")
 @Value
-@AllArgsConstructor
-public class TeamEntity {
+public class CheckpointBlockEntity {
     @Id
     Long id;
-    String name;
-    Long groupId;
+    Long checkpointId;
+    String content;
+    TaskBlockType type;
 }
