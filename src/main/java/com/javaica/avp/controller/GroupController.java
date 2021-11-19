@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GroupController {
 
-    @GetMapping("/me")
+    @GetMapping("/current")
     @Operation(
             summary = "Get current group",
             security = @SecurityRequirement(name = "bearerAuth"),

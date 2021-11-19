@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/courses")
 public class CourseController {
 
-    @GetMapping("/me")
+    @GetMapping("/current")
     @Operation(
             summary = "Get current course",
             security = @SecurityRequirement(name = "bearerAuth"),
