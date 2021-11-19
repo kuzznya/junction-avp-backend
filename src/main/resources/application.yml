@@ -1,0 +1,28 @@
+server:
+  port: ${PORT:8080}
+  tomcat:
+    threads:
+      max: 20
+  error:
+    include-message: always
+    include-exception: false
+    include-stacktrace: never
+    include-binding-errors: always
+
+spring:
+  application:
+    name: avp-incubator
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+security:
+  token-ttl: 14d
+  secret: ${SEC_SECRET}
+  admin:
+    username: ${ADMIN_USERNAME}
+    password: ${ADMIN_PASSWORD}
