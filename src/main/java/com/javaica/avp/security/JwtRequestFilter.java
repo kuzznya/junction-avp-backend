@@ -1,15 +1,14 @@
 package com.javaica.avp.security;
 
+import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.AuthToken;
 import com.javaica.avp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -45,8 +44,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String token = tokenString.substring("Bearer ".length());
         AuthToken authToken = jwtUtil.readToken(token);
         Supplier<AppUser> userProvider = () -> userService.findUser(authToken.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
-                        "User with username " + authToken.getUsername() + " not found"));
+                .orElseThrow(() -> new ForbiddenException("User with username " + authToken.getUsername() + " not found"));
         SecurityContextHolder.getContext().setAuthentication(authToken.createAuthentication(userProvider));
         log.debug("User {} authorized", authToken.getUsername());
     }

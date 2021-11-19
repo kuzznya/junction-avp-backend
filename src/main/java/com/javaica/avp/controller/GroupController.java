@@ -1,7 +1,7 @@
 package com.javaica.avp.controller;
 
 import com.javaica.avp.model.AppUser;
-import com.javaica.avp.model.GroupDto;
+import com.javaica.avp.model.Group;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,9 +10,11 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/groups")
 public class GroupController {
 
     @GetMapping("/current")
@@ -24,7 +26,7 @@ public class GroupController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Current group not found", content = @Content())
             })
-    public GroupDto getCurrentGroup(@AuthenticationPrincipal AppUser userDetails) {
+    public Group getCurrentGroup(@AuthenticationPrincipal AppUser user) {
         return null;
     }
 
