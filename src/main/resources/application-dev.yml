@@ -4,6 +4,9 @@ spring:
     url: jdbc:h2:mem:h2DB;DB_CLOSE_DELAY=-1;CASE_INSENSITIVE_IDENTIFIERS=true
     username: admin
     password: password
+  h2:
+    console:
+      enabled: true
 
 security:
   secret: 12345678
@@ -14,3 +17,6 @@ security:
 logging:
   level:
     com.javaica: debug
+    org.springframework.jdbc.core: debug
+
+

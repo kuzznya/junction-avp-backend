@@ -24,8 +24,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
-    public Task getStageTaskById(@PathVariable Long stageId,
-                                 @PathVariable Long taskId,
+    public Task getStageTaskById(@PathVariable Long taskId,
                                  @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
         return null;
     }
@@ -39,8 +38,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
-    public void submitTaskSolution(@PathVariable Long stageId,
-                                   @PathVariable Long taskId,
+    public void submitTaskSolution(@PathVariable Long taskId,
                                    @RequestBody JsonNode submission,
                                    @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
 

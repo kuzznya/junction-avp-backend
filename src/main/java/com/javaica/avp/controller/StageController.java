@@ -1,34 +1,29 @@
 package com.javaica.avp.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.javaica.avp.entity.StageEntity;
 import com.javaica.avp.model.*;
+import com.javaica.avp.service.StageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.AllArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 
 @RestController
 @RequestMapping("/stages")
+@AllArgsConstructor
 public class StageController {
 
-    @GetMapping
-    @Operation(
-            summary = "Get stages for current course",
-            security = @SecurityRequirement(name = "bearerAuth"),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
-                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
-            })
-    public List<StageHeader> getCurrentStages(@Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
-        return Collections.emptyList();
-    }
+    private StageService stageService;
 
     @GetMapping("/{stageId}")
     @Operation(
@@ -41,6 +36,21 @@ public class StageController {
             })
     public Stage getStageById(@PathVariable Long stageId,
                               @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
-        return null;
+        return stageService.getStageById(stageId);
+    }
+
+    @PostMapping
+    @Secured("ROLE_ADMIN")
+    @Operation(
+            summary = "Create stage",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
+            })
+    public StageEntity createStage(@Valid @RequestBody StageRequest stage,
+                                   @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
+        return stageService.saveStage(stage);
     }
 }
