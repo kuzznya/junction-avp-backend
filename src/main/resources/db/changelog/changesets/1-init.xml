@@ -5,6 +5,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd
                    http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
+    <property name="json_type" value="jsonb" dbms="postgresql"/>
+    <property name="json_type" value="json" dbms="h2"/>
+
     <changeSet id="init" author="Ilya Kuznetsov">
         <createTable tableName="app_user">
             <column autoIncrement="true" name="id" type="INT">
@@ -28,10 +31,131 @@
             <column name="password" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="team_id" type="int">
+                <constraints foreignKeyName="team" nullable="true"/>
+            </column>
         </createTable>
 
         <createIndex tableName="app_user" indexName="idx_app_user_on_username">
             <column name="username"/>
         </createIndex>
+
+        <createTable tableName="course">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+        </createTable>
+        
+        <createTable tableName="group">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="complexity" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="course_id" type="int">
+                <constraints foreignKeyName="course" nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="team">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="group_id" type="int">
+                <constraints foreignKeyName="group" nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="stage">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+        </createTable>
+
+        <createTable tableName="task">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="stage_id" type="int">
+                <constraints foreignKeyName="stage"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+        </createTable>
+
+        <createTable tableName="checkpoint">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="stage_id" type="int">
+                <constraints foreignKeyName="stage"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+        </createTable>
+
+        <createTable tableName="task_block">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="task_id" type="int">
+                <constraints foreignKeyName="task" nullable="false"/>
+            </column>
+            <column name="content" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="answer" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="task_submission">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="team_id" type="int">
+                <constraints foreignKeyName="team" nullable="false"/>
+            </column>
+            <column name="content" type="${json_type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="points" type="int"/>
+        </createTable>
+
+        <createTable tableName="checkpoint_submission">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="team_id" type="int">
+                <constraints foreignKeyName="team" nullable="false"/>
+            </column>
+            <column name="content" type="${json_type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="points" type="int"/>
+            <column name="review" type="text"/>
+        </createTable>
     </changeSet>
 </databaseChangeLog>
