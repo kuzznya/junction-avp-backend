@@ -1,5 +1,6 @@
 package com.javaica.avp.controller;
 
+import com.javaica.avp.exception.NotFoundException;
 import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.Group;
 import com.javaica.avp.service.GroupService;
@@ -33,7 +34,7 @@ public class GroupController {
                     @ApiResponse(responseCode = "404", description = "Current group not found", content = @Content())
             })
     public Group getCurrentGroup(@Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
-        return null;
+        return service.getCurrentGroup(user).orElseThrow(() -> new NotFoundException("Current group not found"));
     }
 
     @PostMapping

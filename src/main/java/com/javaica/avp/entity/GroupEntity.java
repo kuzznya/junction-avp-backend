@@ -6,7 +6,7 @@ import lombok.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table("group")
+@Table("course_group")
 @Value
 @AllArgsConstructor
 @Builder
