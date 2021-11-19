@@ -129,7 +129,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="answer" type="text">
-                <constraints nullable="false"/>
             </column>
         </createTable>
 

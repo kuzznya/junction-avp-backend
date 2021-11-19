@@ -3,6 +3,8 @@ package com.javaica.avp.model;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.List;
+
 @Value
 @Builder
 public class Task {
@@ -10,4 +12,5 @@ public class Task {
     Long stageId;
     String name;
     String description;
+    List<TaskBlock> blocks;
 }

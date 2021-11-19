@@ -11,4 +11,5 @@ public class TaskBlockRequest {
     @NotEmpty
     String content;
     TaskBlockType type;
+    String answer;
 }
