@@ -4,6 +4,7 @@ import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.Course;
 import com.javaica.avp.service.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -31,7 +32,7 @@ public class CourseController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Current course not found", content = @Content())
             })
-    public Course getCurrentCourse(@AuthenticationPrincipal AppUser user) {
+    public Course getCurrentCourse(@Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
         return null;
     }
 
