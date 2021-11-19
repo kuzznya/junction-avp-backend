@@ -54,7 +54,7 @@
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="complexity" type="int">
+            <column name="complexity_level" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="course_id" type="int">
@@ -123,7 +123,7 @@
             <column name="type" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="answer" type="varchar(255)">
+            <column name="answer" type="text">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -135,10 +135,28 @@
             <column name="team_id" type="int">
                 <constraints foreignKeyName="team" nullable="false"/>
             </column>
+            <column name="task_id" type="int">
+                <constraints foreignKeyName="task" nullable="false"/>
+            </column>
             <column name="content" type="${json_type}">
                 <constraints nullable="false"/>
             </column>
             <column name="points" type="int"/>
+        </createTable>
+
+        <createTable tableName="checkpoint_block">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="checkpoint_id" type="int">
+                <constraints foreignKeyName="task" nullable="false"/>
+            </column>
+            <column name="content" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createTable tableName="checkpoint_submission">
@@ -147,6 +165,9 @@
             </column>
             <column name="team_id" type="int">
                 <constraints foreignKeyName="team" nullable="false"/>
+            </column>
+            <column name="checkpoint_id" type="int">
+                <constraints foreignKeyName="checkpoint" nullable="false"/>
             </column>
             <column name="content" type="${json_type}">
                 <constraints nullable="false"/>

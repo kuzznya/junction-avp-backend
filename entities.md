@@ -8,6 +8,7 @@ entity User {
     surname : string
     email : string
     password : string
+    team_id
 }
 
 entity Team {
@@ -33,7 +34,6 @@ entity Stage {
     id
     name
     description
-    checkpoint_id
 }
 
 entity Task {
@@ -51,9 +51,14 @@ entity TaskBlock {
     answer (only for questions)
 }
 
-entity Checkpoint {
+entity CheckpointBlock {
     id
-    // ...
+    checkpoint_id
+    type : (text|question)
+    content
+}
+
+entity Checkpoint {
     id
     stage_id
     name
@@ -64,7 +69,6 @@ entity TaskSubmission {
     id
     team_id
     content: string/json
-    status
     points
 }
 
@@ -93,6 +97,7 @@ Stage ||-left-|| Checkpoint
 Task ||--|{ TaskBlock
 Task ||--o{ TaskSubmission
 TaskSubmission }o--|| Team
+Checkpoint ||--|{ CheckpointBlock
 Checkpoint ||--o{ CheckpointSubmission
 CheckpointSubmission }o--|| Team
 Battle }o--|{ Team
