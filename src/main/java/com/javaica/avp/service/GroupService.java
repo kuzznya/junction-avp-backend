@@ -1,12 +1,14 @@
 package com.javaica.avp.service;
 
 import com.javaica.avp.entity.GroupEntity;
+import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.Group;
 import com.javaica.avp.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +26,11 @@ public class GroupService {
         return repository.findAllByCourseId(courseId).stream()
                 .map(this::entityToModel)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<Group> getCurrentGroup(AppUser user) {
+        return repository.findByTeamId(user.getTeamId())
+                .map(this::entityToModel);
     }
 
     private Group entityToModel(GroupEntity entity) {

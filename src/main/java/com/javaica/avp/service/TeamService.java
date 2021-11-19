@@ -10,6 +10,7 @@ import com.javaica.avp.repository.TeamRepository;
 import com.javaica.avp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +24,7 @@ public class TeamService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public Team createTeam(long groupId, Team team) {
         if (!groupRepository.existsById(groupId))
             throw new NotFoundException("Group with id " + groupId + " not found");

@@ -17,6 +17,3 @@ security:
 logging:
   level:
     com.javaica: debug
-    org.springframework.jdbc.core: debug
-
-

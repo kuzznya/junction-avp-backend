@@ -50,7 +50,7 @@
             <column name="description" type="text"/>
         </createTable>
         
-        <createTable tableName="group">
+        <createTable tableName="course_group">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
