@@ -11,6 +11,7 @@ import org.springframework.data.relational.core.mapping.Table;
 public class StageEntity {
     @Id
     Long id;
+    Long courseId;
     String name;
     String description;
 }
