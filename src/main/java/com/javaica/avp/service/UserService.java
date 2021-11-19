@@ -26,7 +26,8 @@ public class UserService {
     public AppUser createUser(AppUser user) {
         AppUser prepared = user.withId(null)
                 .withPassword(encoder.encode(user.getPassword()))
-                .withRole(UserRole.USER);
+                .withRole(UserRole.USER)
+                .withTeamId(null);
         UserEntity entity = modelToEntity(prepared);
         if (userRepository.existsByUsername(entity.getUsername()))
             throw new AlreadyExistsException();
@@ -58,6 +59,7 @@ public class UserService {
                 .surname(user.getSurname())
                 .email(user.getEmail())
                 .password(user.getPassword())
+                .teamId(user.getTeamId())
                 .build();
     }
 
@@ -70,6 +72,7 @@ public class UserService {
                 .surname(entity.getSurname())
                 .email(entity.getEmail())
                 .password(entity.getPassword())
+                .teamId(entity.getTeamId())
                 .build();
     }
 }

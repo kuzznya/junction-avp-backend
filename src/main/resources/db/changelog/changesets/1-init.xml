@@ -74,6 +74,8 @@
             </column>
         </createTable>
 
+        <addUniqueConstraint tableName="team" columnNames="name, group_id" constraintName="unique_name_in_group_constraint"/>
+
         <createTable tableName="stage">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
