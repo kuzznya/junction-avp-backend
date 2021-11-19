@@ -18,5 +18,4 @@ public class CheckpointSubmissionEntity {
     JsonNode content;
     TaskSubmissionStatus status;
     int points;
-
 }
