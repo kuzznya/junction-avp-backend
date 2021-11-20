@@ -8,6 +8,9 @@
     <property name="json_type" value="jsonb" dbms="postgresql"/>
     <property name="json_type" value="json" dbms="h2"/>
 
+    <property name="timestamp_default_Value" value="now()" dbms="postgresql"/>
+    <property name="timestamp_default_value" value="current_timestamp" dbms="h2"/>
+
     <changeSet id="init" author="Ilya Kuznetsov">
         <createTable tableName="app_user">
             <column autoIncrement="true" name="id" type="INT">
@@ -151,7 +154,7 @@
                 <constraints foreignKeyName="fk_task_submission_task" references="task(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="points" type="int"/>
-            <column name="submission_timestamp" type="timestamp" defaultValue="current_timestamp"/>
+            <column name="submission_timestamp" type="timestamp" defaultValueComputed="${timestamp_default_value}"/>
         </createTable>
 
         <addUniqueConstraint tableName="task_submission" columnNames="team_id, task_id" constraintName="unique_team_task_submission_constraint"/>
@@ -203,7 +206,7 @@
             </column>
             <column name="points" type="int"/>
             <column name="review" type="text"/>
-            <column name="submission_timestamp" type="timestamp" defaultValue="current_timestamp"/>
+            <column name="submission_timestamp" type="timestamp" defaultValueComputed="${timestamp_default_value}"/>
         </createTable>
 
         <createTable tableName="checkpoint_submission_answer">
