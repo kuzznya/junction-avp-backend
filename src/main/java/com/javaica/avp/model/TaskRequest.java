@@ -14,5 +14,6 @@ public class TaskRequest {
     Long stageId;
     String name;
     String description;
+    Integer index;
     List<TaskBlockRequest> blocks;
 }

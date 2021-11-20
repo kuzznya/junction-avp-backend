@@ -3,6 +3,7 @@ package com.javaica.avp.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import lombok.With;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -16,4 +17,6 @@ public class TaskEntity {
     Long stageId;
     String name;
     String description;
+    @With
+    Integer index;
 }

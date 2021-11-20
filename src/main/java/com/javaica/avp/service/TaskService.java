@@ -12,7 +12,10 @@ import com.javaica.avp.repository.TaskBlockRepository;
 import com.javaica.avp.repository.TaskRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,10 +33,21 @@ public class TaskService {
                 .orElseThrow(() -> new NotFoundException("Task " + taskId + " not found"));
     }
 
+    @Transactional
     public Task saveTask(TaskRequest taskRequest) {
         if (!stageRepository.existsById(taskRequest.getStageId()))
             throw new NotFoundException("Stage " + taskRequest.getStageId() + " not found");
-        TaskEntity taskEntity = taskRepository.save(mapTaskRequestToEntity(taskRequest));
+        List<TaskEntity> taskEntities = taskRepository.findAllByStageIdOrderByIndex(taskRequest.getStageId());
+        Integer index = Optional
+                .ofNullable(taskRequest.getIndex())
+                .orElseGet(() -> taskEntities.stream()
+                        .mapToInt(TaskEntity::getIndex)
+                        .max()
+                        .orElse(0));
+        taskEntities.stream()
+                .filter(task -> task.getIndex() >= index)
+                .forEach(task -> taskRepository.save(task.withIndex(task.getIndex() + 1)));
+        TaskEntity taskEntity = taskRepository.save(mapTaskRequestToEntity(taskRequest).withIndex(index));
         taskRequest.getBlocks()
                 .stream()
                 .map(block -> mapTaskBlockRequestToEntity(taskEntity.getId(), block))
@@ -47,6 +61,7 @@ public class TaskService {
                 .stageId(taskEntity.getStageId())
                 .name(taskEntity.getName())
                 .description(taskEntity.getDescription())
+                .index(taskEntity.getIndex())
                 .blocks(
                         taskBlockRepository
                                 .findAllByTaskId(taskEntity.getId())
@@ -68,12 +83,12 @@ public class TaskService {
                 .stageId(taskRequest.getStageId())
                 .name(taskRequest.getName())
                 .description(taskRequest.getDescription())
+                .index(taskRequest.getIndex())
                 .build();
     }
 
     private TaskBlockEntity mapTaskBlockRequestToEntity(Long taskId, TaskBlockRequest taskBlockRequest) {
-        return TaskBlockEntity
-                .builder()
+        return TaskBlockEntity.builder()
                 .taskId(taskId)
                 .content(taskBlockRequest.getContent())
                 .type(taskBlockRequest.getType())

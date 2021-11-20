@@ -81,6 +81,7 @@ public class TestDataCreator implements CommandLineRunner {
                 .name("Task 1")
                 .description("First task")
                 .stageId(stage.getId())
+                .index(0)
                 .blocks(List.of(
                         TaskBlockRequest.builder()
                                 .type(TaskBlockType.TEXT)

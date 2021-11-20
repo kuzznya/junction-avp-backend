@@ -12,5 +12,6 @@ public class Task {
     Long stageId;
     String name;
     String description;
+    Integer index;
     List<TaskBlock> blocks;
 }
