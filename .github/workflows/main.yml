@@ -18,7 +18,7 @@ jobs:
           ./gradlew jib
           -Djib.to.image='registry.gitlab.com/kuzznya/junction-avp-backend'
           -Djib.to.auth.username=kuzznya
-          -Djib.to.auth.password='${{ secrets.GITHUB_TOKEN }}'
+          -Djib.to.auth.password='${{ secrets.GITLAB_TOKEN }}'
           -Djib.console=plain
   deploy:
     needs: build
