@@ -56,7 +56,7 @@ public class CheckpointController {
         return checkpointService.createCheckpoint(checkpoint);
     }
 
-    @PostMapping("/{checkpointId}/submission")
+    @PostMapping("/{checkpointId}/submissions")
     @Operation(
             summary = "Submit checkpoint solution",
             security = @SecurityRequirement(name = "bearerAuth"),
@@ -70,4 +70,6 @@ public class CheckpointController {
                                          @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
         submissionService.submitCheckpoint(checkpointId, submission, user);
     }
+
+
 }
