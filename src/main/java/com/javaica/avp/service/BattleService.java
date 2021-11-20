@@ -12,7 +12,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -25,6 +27,8 @@ public class BattleService {
     private final TeamRepository teamRepository;
     private final CourseService courseService;
     private final AccessService accessService;
+    private final CheckpointService checkpointService;
+    private final StageService stageService;
 
     public List<Battle> getAllBattles() {
         return StreamSupport.stream(battleRepository.findAll().spliterator(), false)
@@ -135,5 +139,31 @@ public class BattleService {
                 team.getId(),
                 team.getName()
         );
+    }
+
+    public BattleProgress getBattleProgress(Long battleId) {
+        BattleEntity battleEntity = battleRepository.findById(battleId)
+                .orElseThrow(() -> new NotFoundException("Battle " + battleId + " not found"));
+        return BattleProgress.builder()
+                .battle(mapBattleEntityToModel(battleEntity))
+                .initiatorProgress(getTeamProgress(battleEntity.getInitiatorId(), battleEntity.getCheckpointId()))
+                .defenderProgress(getTeamProgress(battleEntity.getDefenderId(), battleEntity.getCheckpointId()))
+                .build();
+    }
+
+    private List<StageProgress> getTeamProgress(long teamId, long targetCheckpointId) {
+        long courseId = courseService.getTeamCourse(teamId).getId();
+        return stageService.getStagesByCourse(courseId, teamId)
+                .stream()
+                .sorted(Comparator.comparingInt(Stage::getIndex))
+                .takeWhile(stage -> stage.getCheckpoint().getId().equals(targetCheckpointId))
+                .map(stage -> new StageProgress(
+                        stage.getName(),
+                        Optional.ofNullable(stage.getCheckpoint())
+                                .map(checkpoint -> Optional.ofNullable(checkpoint.getStatus())
+                                        .map(status -> status.equals(CheckpointSubmissionStatus.ACCEPTED))
+                                        .orElse(false))
+                                .orElse(false)))
+                .collect(Collectors.toList());
     }
 }

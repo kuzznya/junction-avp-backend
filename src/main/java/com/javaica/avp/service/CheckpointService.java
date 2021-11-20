@@ -56,15 +56,16 @@ public class CheckpointService {
         return checkpoint;
     }
 
-    public GradedCheckpoint getGradedCheckpointByStageId(Long stageId, AppUser user) {
+
+    public GradedCheckpoint getGradedCheckpointByStageId(Long stageId, long teamId) {
         return checkpointRepository.findByStageId(stageId)
-                .map(checkpoint -> mapCheckpointEntityToGradedModel(checkpoint, user))
+                .map(checkpoint -> mapCheckpointEntityToGradedModel(checkpoint, teamId))
                 .orElse(null);
     }
 
-    private GradedCheckpoint mapCheckpointEntityToGradedModel(CheckpointEntity entity, AppUser user) {
+    private GradedCheckpoint mapCheckpointEntityToGradedModel(CheckpointEntity entity, long teamId) {
         GradedCheckpointProjection checkpointProjection = checkpointRepository
-                .findByStageIdWithSubmission(entity.getStageId(), user.getTeamId())
+                .findByStageIdWithSubmission(entity.getStageId(), teamId)
                 .orElse(null);
         return GradedCheckpoint.builder()
                 .id(entity.getId())
@@ -79,6 +80,11 @@ public class CheckpointService {
                         .map(GradedCheckpointProjection::getPoints)
                         .orElse(null))
                 .build();
+    }
+
+
+    private GradedCheckpoint mapCheckpointEntityToGradedModel(CheckpointEntity entity, AppUser user) {
+        return mapCheckpointEntityToGradedModel(entity, user.getTeamId());
     }
 
     private CheckpointEntity mapCheckpointModelToEntity(CheckpointRequest checkpoint) {

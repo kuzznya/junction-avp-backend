@@ -14,4 +14,5 @@ public class Stage {
     String description;
     List<GradedTask> tasks;
     GradedCheckpoint checkpoint;
+    Integer index;
 }
