@@ -38,6 +38,8 @@ public class SubmissionService {
             throw new ForbiddenException("User doesn't have access to the task");
         if (!taskRepository.existsById(taskId))
             throw new NotFoundException("Task with id " + taskId + " not found");
+        if (taskSubmissionRepository.existsByTaskIdAndTeamId(taskId, user.getTeamId()))
+            throw new ForbiddenException("Task cannot be resubmitted");
         Map<Long, JsonNode> remappedSubmission = remapSubmission(submission);
         int result = countPoints(taskId, remappedSubmission);
         ObjectNode contentNode = objectMapper.createObjectNode();

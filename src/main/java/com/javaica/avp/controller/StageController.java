@@ -1,8 +1,8 @@
 package com.javaica.avp.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.javaica.avp.entity.StageEntity;
-import com.javaica.avp.model.*;
+import com.javaica.avp.model.AppUser;
+import com.javaica.avp.model.Stage;
+import com.javaica.avp.model.StageRequest;
 import com.javaica.avp.service.StageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,8 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Collections;
-import java.util.List;
 
 @RestController
 @RequestMapping("/stages")
@@ -36,7 +34,7 @@ public class StageController {
             })
     public Stage getStageById(@PathVariable Long stageId,
                               @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
-        return stageService.getStageById(stageId);
+        return stageService.getStageById(stageId, user);
     }
 
     @PostMapping

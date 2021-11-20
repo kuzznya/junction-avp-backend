@@ -23,6 +23,7 @@ public class TestDataCreator implements CommandLineRunner {
     private final TeamService teamService;
     private final StageService stageService;
     private final TaskService taskService;
+    private final CheckpointService checkpointService;
 
     private final ObjectMapper mapper;
 
@@ -104,5 +105,12 @@ public class TestDataCreator implements CommandLineRunner {
                 ).build();
         Task task = taskService.saveTask(taskRequest);
         log.info("Task {} created", task);
+
+        Checkpoint checkpoint = Checkpoint.builder()
+                .stageId(stage.getId())
+                .name("Very important checkpoints")
+                .description("Not very important actually")
+                .build();
+        checkpoint = checkpointService.createCheckpoint(checkpoint);
     }
 }

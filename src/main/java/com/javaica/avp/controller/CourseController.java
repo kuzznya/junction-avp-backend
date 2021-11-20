@@ -16,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -79,6 +78,6 @@ public class CourseController {
             })
     public List<StageHeader> getCurrentStages(@PathVariable Long courseId,
                                               @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
-        return stageService.getStageHeaders(courseId);
+        return stageService.getStageHeaders(courseId, user);
     }
 }

@@ -1,12 +1,14 @@
 package com.javaica.avp.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Value;
+import lombok.experimental.NonFinal;
+import lombok.experimental.SuperBuilder;
 
 @Value
 @AllArgsConstructor
-@Builder
+@SuperBuilder
+@NonFinal
 public class CheckpointHeader {
     Long id;
     String name;

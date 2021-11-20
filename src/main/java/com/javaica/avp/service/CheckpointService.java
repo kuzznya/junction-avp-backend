@@ -22,12 +22,22 @@ public class CheckpointService {
         if (checkpointRepository.existsByStageId(checkpoint.getStageId()))
             throw new AlreadyExistsException("Checkpoint already exists for this task");
         return mapCheckpointEntityToModel(
-                checkpointRepository.save(mapCheckpointModelToEntity(checkpoint))
+                checkpointRepository.save(mapCheckpointModelToEntity(checkpoint.withId(null)))
         );
+    }
+
+    // TODO add user check & add user's info (submission status like in StageService)
+    public Checkpoint getCheckpointById(Long checkpointId) {
+        return checkpointRepository
+                .findById(checkpointId)
+                .map(this::mapCheckpointEntityToModel)
+                .orElseThrow(() -> new NotFoundException("Checkpoint " + checkpointId + " does not exist"));
+
     }
 
     private CheckpointEntity mapCheckpointModelToEntity(Checkpoint checkpoint) {
         return CheckpointEntity.builder()
+                .id(checkpoint.getId())
                 .stageId(checkpoint.getStageId())
                 .name(checkpoint.getName())
                 .description(checkpoint.getDescription())
@@ -36,17 +46,10 @@ public class CheckpointService {
 
     private Checkpoint mapCheckpointEntityToModel(CheckpointEntity entity) {
         return Checkpoint.builder()
+                .id(entity.getId())
                 .stageId(entity.getStageId())
                 .name(entity.getName())
                 .description(entity.getDescription())
                 .build();
-    }
-
-    public Checkpoint getCheckpointById(Long checkpointId) {
-        return checkpointRepository
-                .findById(checkpointId)
-                .map(this::mapCheckpointEntityToModel)
-                .orElseThrow(() -> new NotFoundException("Checkpoint " + checkpointId + " does not exist"));
-
     }
 }

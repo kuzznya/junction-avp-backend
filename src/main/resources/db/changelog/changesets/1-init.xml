@@ -149,6 +149,8 @@
             <column name="points" type="int"/>
         </createTable>
 
+        <addUniqueConstraint tableName="task_submission" columnNames="team_id, task_id" constraintName="unique_team_task_submission_constraint"/>
+
         <createTable tableName="checkpoint_block">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
