@@ -6,6 +6,7 @@ import com.javaica.avp.model.Checkpoint;
 import com.javaica.avp.model.CheckpointRequest;
 import com.javaica.avp.model.GradedCheckpoint;
 import com.javaica.avp.service.CheckpointService;
+import com.javaica.avp.service.SubmissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/checkpoints")
@@ -24,6 +26,7 @@ import javax.validation.Valid;
 public class CheckpointController {
 
     private final CheckpointService checkpointService;
+    private final SubmissionService submissionService;
 
     @GetMapping("/{checkpointId}")
     @Operation(
@@ -63,7 +66,8 @@ public class CheckpointController {
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
     public void submitCheckpointSolution(@PathVariable Long checkpointId,
-                                         @RequestBody JsonNode submission,
+                                         @RequestBody Map<String, JsonNode> submission,
                                          @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
+        submissionService.submitCheckpoint(checkpointId, submission, user);
     }
 }

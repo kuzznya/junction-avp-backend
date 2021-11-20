@@ -6,12 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.Map;
+
 @Value
 @AllArgsConstructor(onConstructor_ = @JsonCreator)
 @Builder
 public class TaskSubmissionResult {
     Long id;
     Long teamId;
-    JsonNode content;
+    Map<Long, JsonNode> content;
     int points;
 }
