@@ -6,10 +6,7 @@ import com.javaica.avp.entity.GradedCheckpointProjection;
 import com.javaica.avp.exception.AlreadyExistsException;
 import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.exception.NotFoundException;
-import com.javaica.avp.model.AppUser;
-import com.javaica.avp.model.Checkpoint;
-import com.javaica.avp.model.GradedCheckpoint;
-import com.javaica.avp.model.CheckpointBlock;
+import com.javaica.avp.model.*;
 import com.javaica.avp.repository.CheckpointBlockRepository;
 import com.javaica.avp.repository.CheckpointRepository;
 import com.javaica.avp.repository.StageRepository;
@@ -33,13 +30,13 @@ public class CheckpointService {
     private final AccessService accessService;
 
     @Transactional
-    public Checkpoint createCheckpoint(Checkpoint checkpoint) {
+    public Checkpoint createCheckpoint(CheckpointRequest checkpoint) {
         if (!stageRepository.existsById(checkpoint.getStageId()))
             throw new NotFoundException("Stage " + checkpoint.getStageId() + " does not exist");
         if (checkpointRepository.existsByStageId(checkpoint.getStageId()))
             throw new AlreadyExistsException("Checkpoint already exists for this task");
 
-        CheckpointEntity entity = checkpointRepository.save(mapCheckpointModelToEntity(checkpoint.withId(null)));
+        CheckpointEntity entity = checkpointRepository.save(mapCheckpointModelToEntity(checkpoint));
         List<CheckpointBlockEntity> blocks = IntStream.range(0, checkpoint.getBlocks().size())
                 .mapToObj(idx -> checkpoint.getBlocks().get(idx).withIndex(idx))
                 .map(block -> blockModelToEntity(block, entity.getId()))
@@ -78,9 +75,8 @@ public class CheckpointService {
                 .build();
     }
 
-    private CheckpointEntity mapCheckpointModelToEntity(Checkpoint checkpoint) {
+    private CheckpointEntity mapCheckpointModelToEntity(CheckpointRequest checkpoint) {
         return CheckpointEntity.builder()
-                .id(checkpoint.getId())
                 .stageId(checkpoint.getStageId())
                 .name(checkpoint.getName())
                 .description(checkpoint.getDescription())

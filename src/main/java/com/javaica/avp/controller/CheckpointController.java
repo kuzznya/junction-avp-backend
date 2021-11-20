@@ -3,6 +3,7 @@ package com.javaica.avp.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.Checkpoint;
+import com.javaica.avp.model.CheckpointRequest;
 import com.javaica.avp.model.GradedCheckpoint;
 import com.javaica.avp.service.CheckpointService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,7 +49,7 @@ public class CheckpointController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
-    public Checkpoint createCheckpoint(@Valid @RequestBody Checkpoint checkpoint) {
+    public Checkpoint createCheckpoint(@Valid @RequestBody CheckpointRequest checkpoint) {
         return checkpointService.createCheckpoint(checkpoint);
     }
 

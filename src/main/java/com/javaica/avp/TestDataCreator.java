@@ -109,11 +109,10 @@ public class TestDataCreator implements CommandLineRunner {
         Task task = taskService.saveTask(taskRequest);
         log.info("Task {} created", task);
 
-        Checkpoint checkpoint = Checkpoint.builder()
+        CheckpointRequest checkpoint = CheckpointRequest.builder()
                 .stageId(stage.getId())
                 .name("Very important checkpoints")
                 .description("Not very important actually")
                 .build();
-        checkpoint = checkpointService.createCheckpoint(checkpoint);
     }
 }
