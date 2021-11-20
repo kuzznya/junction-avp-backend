@@ -2,6 +2,7 @@ package com.javaica.avp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaica.avp.model.*;
+import com.javaica.avp.repository.*;
 import com.javaica.avp.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Profile("dev")
 @Order(2)
 @RequiredArgsConstructor
 @Slf4j
@@ -27,29 +27,27 @@ public class TestDataCreator implements CommandLineRunner {
     private final TaskService taskService;
     private final CheckpointService checkpointService;
 
+    private final CourseRepository courseRepository;
+
     private final ObjectMapper mapper;
 
     @Override
     public void run(String... args) throws Exception {
+        courseRepository.deleteAll();
+
         for (int i = 1; i <= 3; i++) {
-            AppUser user = AppUser.builder()
-                    .username("user" + i)
-                    .name("User" + i)
-                    .surname("Surname" + i)
-                    .email("user" + i + "@mail")
-                    .password("password")
-                    .build();
-            user = userService.createUser(user);
-            log.info("User {} created", user);
+            try {
+                AppUser user = AppUser.builder()
+                        .username("user" + i)
+                        .name("User" + i)
+                        .surname("Surname" + i)
+                        .email("user" + i + "@mail")
+                        .password("password")
+                        .build();
+                user = userService.createUser(user);
+                log.info("User {} created", user);
+            } catch (Exception ignored) {}
         }
-        AppUser userWithoutCourse = AppUser.builder()
-                .username("user_without_course")
-                .name("User")
-                .surname("Surname")
-                .email("user@mail")
-                .password("password")
-                .build();
-        userWithoutCourse = userService.createUser(userWithoutCourse);
 
         Course course = Course.builder()
                 .name("Test course")
