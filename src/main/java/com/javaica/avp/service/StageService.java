@@ -34,8 +34,8 @@ public class StageService {
     }
 
     @Transactional
-    public StageEntity saveStage(StageRequest stage) {
-        return stageRepository.save(mapStageModelToEntity(stage));
+    public Stage saveStage(StageRequest stage) {
+        return mapStageEntityToModel(stageRepository.save(mapStageModelToEntity(stage)));
     }
 
     private Stage mapStageEntityToModel(StageEntity stageEntity) {

@@ -40,6 +40,13 @@ public class TaskController {
 
     @PostMapping
     @Secured("ROLE_USER")
+    @Operation(
+            summary = "Create new task",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content())
+            })
     public Task createNewTask(@Valid @RequestBody TaskRequest taskRequest) {
         return taskService.saveTask(taskRequest);
     }
