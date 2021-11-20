@@ -1,5 +1,6 @@
 package com.javaica.avp.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.javaica.avp.model.TaskBlockType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ public class TaskBlockEntity {
     Long taskId;
     String content;
     TaskBlockType type;
-    String answer;
+    JsonNode answer;
     @With
     Integer index;
 }

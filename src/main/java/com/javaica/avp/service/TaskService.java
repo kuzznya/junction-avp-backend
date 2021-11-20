@@ -2,11 +2,9 @@ package com.javaica.avp.service;
 
 import com.javaica.avp.entity.TaskBlockEntity;
 import com.javaica.avp.entity.TaskEntity;
+import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.exception.NotFoundException;
-import com.javaica.avp.model.Task;
-import com.javaica.avp.model.TaskBlock;
-import com.javaica.avp.model.TaskBlockRequest;
-import com.javaica.avp.model.TaskRequest;
+import com.javaica.avp.model.*;
 import com.javaica.avp.repository.StageRepository;
 import com.javaica.avp.repository.TaskBlockRepository;
 import com.javaica.avp.repository.TaskRepository;
@@ -23,11 +21,14 @@ import java.util.stream.IntStream;
 @AllArgsConstructor
 public class TaskService {
 
+    private final AccessService accessService;
     private final TaskRepository taskRepository;
     private final TaskBlockRepository taskBlockRepository;
     private final StageRepository stageRepository;
 
-    public Task getTaskById(Long taskId) {
+    public Task getTaskById(Long taskId, AppUser user) {
+        if (!accessService.userHasAccessToTask(taskId, user))
+            throw new ForbiddenException("User doesn't have access to the task");
         return taskRepository
                 .findById(taskId)
                 .map(this::mapTaskEntityToModel)
@@ -76,6 +77,7 @@ public class TaskService {
 
     private TaskBlock mapTaskBlockEntityToModel(TaskBlockEntity taskBlockEntity) {
         return TaskBlock.builder()
+                .id(taskBlockEntity.getId())
                 .content(taskBlockEntity.getContent())
                 .type(taskBlockEntity.getType())
                 .index(taskBlockEntity.getIndex())

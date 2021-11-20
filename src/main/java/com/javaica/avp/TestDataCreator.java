@@ -1,5 +1,6 @@
 package com.javaica.avp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaica.avp.model.*;
 import com.javaica.avp.service.*;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,10 @@ public class TestDataCreator implements CommandLineRunner {
     private final StageService stageService;
     private final TaskService taskService;
 
+    private final ObjectMapper mapper;
+
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws Exception {
         for (int i = 1; i <= 3; i++) {
             AppUser user = AppUser.builder()
                     .username("user" + i)
@@ -90,7 +93,12 @@ public class TestDataCreator implements CommandLineRunner {
                         TaskBlockRequest.builder()
                                 .type(TaskBlockType.QUESTION)
                                 .content("Ty pidor?")
-                                .answer("Da")
+                                .answer(mapper.readTree("\"Da\""))
+                                .build(),
+                        TaskBlockRequest.builder()
+                                .type(TaskBlockType.QUESTION)
+                                .content("Place in correct order: 1 - Get up in the morning, 2 - Drink beer")
+                                .answer(mapper.readTree("[1, 2]"))
                                 .build()
                         )
                 ).build();

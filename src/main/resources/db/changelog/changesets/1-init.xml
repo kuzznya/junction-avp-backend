@@ -129,8 +129,7 @@
             <column name="type" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="answer" type="text">
-            </column>
+            <column name="answer" type="${json_type}"/>
             <column name="index" type="int"/>
         </createTable>
 
