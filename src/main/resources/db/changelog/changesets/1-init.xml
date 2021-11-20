@@ -227,13 +227,30 @@
                 <constraints nullable="false"/>
             </column>
             <column name="initiator_id" type="int">
-                <constraints foreignKeyName="fk_battle_initiator" references="app_user(id)" nullable="false"/>
+                <constraints foreignKeyName="fk_battle_initiator" references="team(id)" nullable="false"/>
             </column>
             <column name="defender_id" type="int">
-                <constraints foreignKeyName="fk_battle_defender" references="app_user(id)" nullable="false"/>
+                <constraints foreignKeyName="fk_battle_defender" references="team(id)" nullable="false"/>
             </column>
             <column name="checkpoint_id" type="int">
                 <constraints foreignKeyName="checkpoint" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="collab" author="Max Golish">
+        <createTable tableName="collab">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="requester_id" type="int">
+                <constraints foreignKeyName="fk_collab_requester" references="team(id)" nullable="false"/>
+            </column>
+            <column name="helper_id" type="int">
+                <constraints foreignKeyName="fk_collab_helper" references="team(id)" nullable="false"/>
             </column>
         </createTable>
     </changeSet>
