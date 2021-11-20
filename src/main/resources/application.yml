@@ -8,6 +8,8 @@ server:
     include-exception: false
     include-stacktrace: never
     include-binding-errors: always
+  servlet:
+    context-path: /api/v1
 
 spring:
   application:

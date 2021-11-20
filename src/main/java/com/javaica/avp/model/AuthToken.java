@@ -27,14 +27,19 @@ public class AuthToken {
                 .collect(Collectors.toList());
 
         return new AbstractAuthenticationToken(authorities) {
+
+            private AppUser providedUser;
+
             @Override
             public Object getCredentials() {
                 return AuthToken.this;
             }
 
             @Override
-            public Object getPrincipal() {
-                return principalProvider.get();
+            public synchronized Object getPrincipal() {
+                if (providedUser == null)
+                    providedUser = principalProvider.get();
+                return providedUser;
             }
 
             @Override

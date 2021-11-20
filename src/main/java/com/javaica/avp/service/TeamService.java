@@ -2,6 +2,7 @@ package com.javaica.avp.service;
 
 import com.javaica.avp.entity.TeamEntity;
 import com.javaica.avp.entity.UserEntity;
+import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.exception.NotFoundException;
 import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.Team;
@@ -10,6 +11,7 @@ import com.javaica.avp.repository.TeamRepository;
 import com.javaica.avp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,10 +25,11 @@ public class TeamService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
 
-    public Team createTeam(long groupId, Team team) {
-        if (!groupRepository.existsById(groupId))
-            throw new NotFoundException("Group with id " + groupId + " not found");
-        TeamEntity entity = modelToEntity(groupId, team.withId(null));
+    @Transactional
+    public Team createTeam(Team team) {
+        if (!groupRepository.existsById(team.getGroupId()))
+            throw new NotFoundException("Group with id " + team.getGroupId() + " not found");
+        TeamEntity entity = modelToEntity(team.getGroupId(), team.withId(null));
         TeamEntity savedEntity = teamRepository.save(entity);
         for (String username : team.getMembers()) {
             userRepository.findByUsername(username)
@@ -40,6 +43,15 @@ public class TeamService {
         return Optional.ofNullable(user.getTeamId())
                 .flatMap(teamRepository::findById)
                 .map(this::entityToModel);
+    }
+
+    public List<Team> getLeaderboard(AppUser user) {
+        if (user.getTeamId() == null)
+            throw new ForbiddenException("User has no team");
+        return teamRepository.getLeaderboard(user.getTeamId())
+                .stream()
+                .map(this::entityToModel)
+                .collect(Collectors.toList());
     }
 
     public List<Team> getAllTeams(long groupId) {

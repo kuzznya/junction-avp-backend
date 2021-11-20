@@ -1,7 +1,7 @@
 package com.javaica.avp.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.javaica.avp.model.TaskSubmissionStatus;
+import com.javaica.avp.model.CheckpointSubmissionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.springframework.data.annotation.Id;
@@ -16,6 +16,6 @@ public class CheckpointSubmissionEntity {
     Long teamId;
     Long checkpointId;
     JsonNode content;
-    TaskSubmissionStatus status;
+    CheckpointSubmissionStatus status;
     int points;
 }

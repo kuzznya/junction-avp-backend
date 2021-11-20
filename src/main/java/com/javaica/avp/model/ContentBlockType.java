@@ -1,6 +1,6 @@
 package com.javaica.avp.model;
 
-public enum TaskBlockType {
+public enum ContentBlockType {
     TEXT,
     QUESTION
 }

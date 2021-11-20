@@ -50,7 +50,7 @@
             <column name="description" type="text"/>
         </createTable>
         
-        <createTable tableName="group">
+        <createTable tableName="course_group">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
@@ -100,6 +100,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="text"/>
+            <column name="index" type="int"/>
         </createTable>
 
         <createTable tableName="checkpoint">
@@ -128,7 +129,8 @@
             <column name="type" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="answer" type="text">
+            <column name="answer" type="${json_type}"/>
+            <column name="index" type="int">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -149,6 +151,8 @@
             <column name="points" type="int"/>
         </createTable>
 
+        <addUniqueConstraint tableName="task_submission" columnNames="team_id, task_id" constraintName="unique_team_task_submission_constraint"/>
+
         <createTable tableName="checkpoint_block">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
@@ -160,6 +164,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="index" type="int">
                 <constraints nullable="false"/>
             </column>
         </createTable>

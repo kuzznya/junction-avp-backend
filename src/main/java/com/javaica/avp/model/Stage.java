@@ -8,8 +8,10 @@ import java.util.List;
 @Value
 @Builder
 public class Stage {
+    Long id;
+    Long courseId;
     String name;
     String description;
     List<TaskHeader> tasks;
-    CheckpointHeader checkpointHeader;
+    CheckpointHeader checkpoint;
 }

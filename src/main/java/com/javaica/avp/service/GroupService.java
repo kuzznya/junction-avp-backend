@@ -1,12 +1,14 @@
 package com.javaica.avp.service;
 
 import com.javaica.avp.entity.GroupEntity;
+import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.Group;
 import com.javaica.avp.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,8 +17,8 @@ public class GroupService {
 
     private final GroupRepository repository;
 
-    public Group createGroup(long courseId, Group group) {
-        GroupEntity entity = modelToEntity(group.withId(null), courseId);
+    public Group createGroup(Group group) {
+        GroupEntity entity = modelToEntity(group.withId(null));
         return entityToModel(repository.save(entity));
     }
 
@@ -26,17 +28,23 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
+    public Optional<Group> getCurrentGroup(AppUser user) {
+        return repository.findByTeamId(user.getTeamId())
+                .map(this::entityToModel);
+    }
+
     private Group entityToModel(GroupEntity entity) {
         return Group.builder()
                 .id(entity.getId())
                 .complexityLevel(entity.getComplexityLevel())
+                .courseId(entity.getCourseId())
                 .build();
     }
 
-    private GroupEntity modelToEntity(Group group, long courseId) {
+    private GroupEntity modelToEntity(Group group) {
         return GroupEntity.builder()
                 .id(group.getId())
-                .courseId(courseId)
+                .courseId(group.getCourseId())
                 .complexityLevel(group.getComplexityLevel())
                 .build();
     }
