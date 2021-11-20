@@ -47,8 +47,7 @@ public class StageController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
-    public Stage createStage(@Valid @RequestBody StageRequest stage,
-                                   @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
+    public Stage createStage(@Valid @RequestBody StageRequest stage) {
         return stageService.saveStage(stage);
     }
 }

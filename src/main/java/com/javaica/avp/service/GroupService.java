@@ -17,8 +17,8 @@ public class GroupService {
 
     private final GroupRepository repository;
 
-    public Group createGroup(long courseId, Group group) {
-        GroupEntity entity = modelToEntity(group.withId(null), courseId);
+    public Group createGroup(Group group) {
+        GroupEntity entity = modelToEntity(group.withId(null));
         return entityToModel(repository.save(entity));
     }
 
@@ -41,10 +41,10 @@ public class GroupService {
                 .build();
     }
 
-    private GroupEntity modelToEntity(Group group, long courseId) {
+    private GroupEntity modelToEntity(Group group) {
         return GroupEntity.builder()
                 .id(group.getId())
-                .courseId(courseId)
+                .courseId(group.getCourseId())
                 .complexityLevel(group.getComplexityLevel())
                 .build();
     }

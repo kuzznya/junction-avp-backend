@@ -56,21 +56,24 @@ public class TestDataCreator implements CommandLineRunner {
         course = courseService.createCourse(course);
         log.info("Course {} created", course);
         Group group = Group.builder()
+                .courseId(course.getId())
                 .complexityLevel(3)
                 .build();
-        group = groupService.createGroup(course.getId(), group);
+        group = groupService.createGroup(group);
         log.info("Group {} created", group);
         Team team = Team.builder()
                 .name("Test team 1")
                 .members(List.of("admin", "user1", "user2"))
+                .groupId(group.getId())
                 .build();
-        team = teamService.createTeam(group.getId(), team);
+        team = teamService.createTeam(team);
         log.info("Team {} created", team);
         Team team2 = Team.builder()
                 .name("Test team 2")
                 .members(List.of("user3"))
+                .groupId(group.getId())
                 .build();
-        team2 = teamService.createTeam(group.getId(), team2);
+        team2 = teamService.createTeam(team2);
         log.info("Team {} created", team2);
 
         StageRequest stageRequest = StageRequest.builder()

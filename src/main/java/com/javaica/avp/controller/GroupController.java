@@ -18,12 +18,13 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequestMapping("/groups")
 @RequiredArgsConstructor
 public class GroupController {
 
     private final GroupService service;
 
-    @GetMapping("/groups/current")
+    @GetMapping("/current")
     @Operation(
             summary = "Get current group",
             security = @SecurityRequirement(name = "bearerAuth"),
@@ -36,7 +37,7 @@ public class GroupController {
         return service.getCurrentGroup(user).orElseThrow(() -> new NotFoundException("Current group not found"));
     }
 
-    @PostMapping("/courses/{courseId}/groups")
+    @PostMapping
     @Secured("ROLE_ADMIN")
     @Operation(
             summary = "Create new group",
@@ -46,12 +47,11 @@ public class GroupController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "400", description = "Bad request", content = @Content())
             })
-    public Group createNewGroup(@PathVariable("courseId") long courseId,
-                                @RequestBody @Valid Group group) {
-        return service.createGroup(courseId, group);
+    public Group createNewGroup(@RequestBody @Valid Group group) {
+        return service.createGroup(group);
     }
 
-    @GetMapping("/courses/{courseId}/groups")
+    @GetMapping
     @Secured("ROLE_ADMIN")
     @Operation(
             summary = "Get all groups",
@@ -61,7 +61,7 @@ public class GroupController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "400", description = "Bad request", content = @Content())
             })
-    public List<Group> getAllGroups(@PathVariable("courseId") long courseId) {
+    public List<Group> getAllGroups(@RequestParam("courseId") long courseId) {
         return service.getAllGroups(courseId);
     }
 }
