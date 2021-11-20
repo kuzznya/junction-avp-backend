@@ -36,7 +36,13 @@ body{
   text-align: center;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
   position: relative;
+  margin-bottom: 50px;
 }
+
+.card:last-child{
+  margin-bottom: 0;
+}
+
 
 .card_modal {
   min-width: 300px;
@@ -109,7 +115,7 @@ body{
   font-size: 15px;
   background: orange;
   border: none;
-  padding: 10px;
+  padding: 8px 10px 10px;
   border-radius: 5px;
   width: 100%;
   color: white;
@@ -330,3 +336,51 @@ body{
 .tasks__item-answer{
 }
 
+.review{
+  border-radius: 14px;
+  padding: 20px;
+  background: white;
+  border: solid 1px #ababab;
+  text-align: left;
+  display: grid;
+  grid-row-gap: 15px;
+}
+
+.review__block{
+}
+
+.review__name{
+  font-weight: 600;
+}
+
+.review__time{
+  color: #808080;
+  font-size: 12px;
+}
+
+.review__description{
+  text-align: left;
+}
+
+.review__row{
+  width: 100%;
+  display: flex;
+}
+
+.review__input{
+  flex-grow: 2;
+  margin-right: 15px;
+}
+
+.review__button{
+  width: 100px;
+  margin-right: 5px;
+}
+
+.review__button_black{
+  background: black;
+}
+
+.review__button:last-child{
+  margin-right: 0;
+}

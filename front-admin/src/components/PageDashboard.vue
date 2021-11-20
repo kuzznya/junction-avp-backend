@@ -2,6 +2,7 @@
   <div class="page">
     <Header></Header>
     <CardList @openModal="opened = true"></CardList>
+    <CardReview></CardReview>
     <Modal v-show="this.opened" @closeModal="opened = false"></Modal>
   </div>
 </template>
@@ -10,9 +11,10 @@
 import Header from "./Header";
 import CardList from "./CardList";
 import Modal from "./Modal";
+import CardReview from "./CardReview";
 export default {
   name: "PageDashboard",
-  components: {Modal, CardList, Header},
+  components: {CardReview, Modal, CardList, Header},
   data(){
     return{
       opened: false
