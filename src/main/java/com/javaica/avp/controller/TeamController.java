@@ -1,5 +1,6 @@
 package com.javaica.avp.controller;
 
+import com.javaica.avp.entity.GradedTeamProjection;
 import com.javaica.avp.exception.NotFoundException;
 import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.Team;
@@ -33,7 +34,7 @@ public class TeamController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Current team not found", content = @Content())
             })
-    public Team getCurrentTeam(@Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
+    public GradedTeamProjection getCurrentTeam(@Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
         return service.getTeamOfUser(user)
                 .orElseThrow(() -> new NotFoundException("Current team not found"));
     }
@@ -46,7 +47,7 @@ public class TeamController {
                     @ApiResponse(responseCode = "200", description = "OK"),
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content())
             })
-    public List<Team> getLeaderboard(@Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
+    public List<GradedTeamProjection> getLeaderboard(@Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
         return service.getLeaderboard(user);
     }
 

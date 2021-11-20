@@ -1,5 +1,6 @@
 package com.javaica.avp.service;
 
+import com.javaica.avp.entity.GradedTeamProjection;
 import com.javaica.avp.entity.TeamEntity;
 import com.javaica.avp.entity.UserEntity;
 import com.javaica.avp.exception.ForbiddenException;
@@ -39,19 +40,15 @@ public class TeamService {
         return entityToModel(savedEntity);
     }
 
-    public Optional<Team> getTeamOfUser(AppUser user) {
+    public Optional<GradedTeamProjection> getTeamOfUser(AppUser user) {
         return Optional.ofNullable(user.getTeamId())
-                .flatMap(teamRepository::findById)
-                .map(this::entityToModel);
+                .flatMap(teamRepository::findByIdWithPoints);
     }
 
-    public List<Team> getLeaderboard(AppUser user) {
+    public List<GradedTeamProjection> getLeaderboard(AppUser user) {
         if (user.getTeamId() == null)
             throw new ForbiddenException("User has no team");
-        return teamRepository.getLeaderboard(user.getTeamId())
-                .stream()
-                .map(this::entityToModel)
-                .collect(Collectors.toList());
+        return teamRepository.getLeaderboard(user.getTeamId());
     }
 
     public List<Team> getAllTeams(long groupId) {
@@ -71,6 +68,7 @@ public class TeamService {
     private Team entityToModel(TeamEntity entity) {
         return Team.builder()
                 .id(entity.getId())
+                .groupId(entity.getGroupId())
                 .name(entity.getName())
                 .members(getUsernamesByTeamId(entity.getId()))
                 .build();
