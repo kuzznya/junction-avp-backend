@@ -61,7 +61,7 @@ public class GroupController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "400", description = "Bad request", content = @Content())
             })
-    public List<Group> getAllGroups(@RequestParam("courseId") long courseId) {
+    public List<Group> getAllGroups(@RequestParam("course_id") long courseId) {
         return service.getAllGroups(courseId);
     }
 }

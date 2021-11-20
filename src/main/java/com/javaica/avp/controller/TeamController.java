@@ -18,12 +18,13 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequestMapping("/teams")
 @RequiredArgsConstructor
 public class TeamController {
 
     private final TeamService service;
 
-    @GetMapping("/teams/current")
+    @GetMapping("/current")
     @Operation(
             summary = "Get current team",
             security = @SecurityRequirement(name = "bearerAuth"),
@@ -37,7 +38,19 @@ public class TeamController {
                 .orElseThrow(() -> new NotFoundException("Current team not found"));
     }
 
-    @PostMapping("/groups/{groupId}/teams")
+    @GetMapping("/leaderboard")
+    @Operation(
+            summary = "Get all teams",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content())
+            })
+    public List<Team> getLeaderboard(@Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
+        return service.getLeaderboard(user);
+    }
+
+    @PostMapping
     @Secured("ROLE_ADMIN")
     @Operation(
             summary = "Create team",
@@ -47,12 +60,11 @@ public class TeamController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "400", description = "Bad request", content = @Content())
             })
-    public Team createTeam(@PathVariable("groupId") long groupId,
-                           @RequestBody @Valid Team team) {
-        return service.createTeam(groupId, team);
+    public Team createTeam(@RequestBody @Valid Team team) {
+        return service.createTeam(team);
     }
 
-    @GetMapping("/groups/{groupId}/teams")
+    @GetMapping
     @Secured("ROLE_ADMIN")
     @Operation(
             summary = "Get all teams",
@@ -62,7 +74,7 @@ public class TeamController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "400", description = "Bad request", content = @Content())
             })
-    public List<Team> getAllTeams(@PathVariable("groupId") long groupId) {
+    public List<Team> getAllTeams(@RequestParam("group_id") long groupId) {
         return service.getAllTeams(groupId);
     }
 }
