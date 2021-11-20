@@ -26,11 +26,11 @@
         </div>
         <select class="card__header-button" style="font-weight: 400" v-model="block.type">
           <optgroup label="Block type">
-            <option :value="'text'">Text</option>
             <option :value="'question'">Question</option>
+            <option :value="'text'">Text</option>
           </optgroup>
         </select>
-        <input v-model="block.question" class="card__input" placeholder="text">
+        <input v-model="block.text" class="card__input" placeholder="text">
         <input v-show="block.type === 'question'" v-model="block.answer" class="card__input" placeholder="answer">
         <button class="card__header-button" @click="addBlock">Add</button>
       </div>
@@ -74,7 +74,7 @@ export default {
       else {
         this.blocks.push({text: this.block.text, type: this.block.type});
       }
-      this.block = { question: '', answer: '', type: 'question'}
+      this.block = { text: '', answer: '', type: 'question'}
     }
   }
 }

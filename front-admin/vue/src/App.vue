@@ -9,13 +9,15 @@
 import CardLogIn from "./components/CardLogIn";
 import PageLogIn from "./components/PageLogIn";
 import PageDashboard from "./components/PageDashboard";
+
 export default {
   name: 'app',
   components: {PageDashboard, PageLogIn, CardLogIn},
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
     }
+  },
+  methods: {
   }
 }
 </script>
