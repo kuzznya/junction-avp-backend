@@ -6,6 +6,8 @@ import lombok.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.Instant;
+
 @Table("task_submission")
 @Value
 @AllArgsConstructor
@@ -16,4 +18,5 @@ public class TaskSubmissionEntity {
     Long teamId;
     Long taskId;
     int points;
+    Instant submissionTimestamp;
 }

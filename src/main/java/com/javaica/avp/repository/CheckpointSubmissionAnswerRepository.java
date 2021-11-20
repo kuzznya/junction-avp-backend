@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface CheckpointSubmissionAnswerRepository extends CrudRepository<CheckpointSubmissionAnswerEntity, Long> {
-    void deleteAllByCheckpointSubmissionId(long id);
     List<CheckpointSubmissionAnswerEntity> findAllByCheckpointSubmissionId(long id);
 }

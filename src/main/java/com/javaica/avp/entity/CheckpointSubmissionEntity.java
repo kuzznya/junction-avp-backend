@@ -8,6 +8,8 @@ import lombok.With;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.Instant;
+
 @Table("checkpoint_submission")
 @Value
 @AllArgsConstructor
@@ -23,4 +25,5 @@ public class CheckpointSubmissionEntity {
     Integer points;
     @With
     String review;
+    Instant submissionTimestamp;
 }

@@ -151,6 +151,7 @@
                 <constraints foreignKeyName="fk_task_submission_task" references="task(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="points" type="int"/>
+            <column name="submission_timestamp" type="timestamp" defaultValue="current_timestamp"/>
         </createTable>
 
         <addUniqueConstraint tableName="task_submission" columnNames="team_id, task_id" constraintName="unique_team_task_submission_constraint"/>
@@ -202,6 +203,7 @@
             </column>
             <column name="points" type="int"/>
             <column name="review" type="text"/>
+            <column name="submission_timestamp" type="timestamp" defaultValue="current_timestamp"/>
         </createTable>
 
         <createTable tableName="checkpoint_submission_answer">

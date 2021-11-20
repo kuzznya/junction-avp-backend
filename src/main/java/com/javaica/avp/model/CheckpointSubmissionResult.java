@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
+import java.time.Instant;
 import java.util.Map;
 
 @Value
@@ -17,4 +18,5 @@ public class CheckpointSubmissionResult {
     CheckpointSubmissionStatus status;
     String review;
     Integer points;
+    Instant submissionTimestamp;
 }

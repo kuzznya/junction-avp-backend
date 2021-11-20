@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,6 +50,7 @@ public class SubmissionService {
                 .points(result)
                 .teamId(user.getTeamId())
                 .taskId(taskId)
+                .submissionTimestamp(Instant.now())
                 .build();
         TaskSubmissionEntity savedEntity = taskSubmissionRepository.save(entity);
         taskSubmissionAnswerRepository.saveAll(
@@ -73,16 +75,15 @@ public class SubmissionService {
         if (isInReview)
             throw new ForbiddenException("Cannot resubmit checkpoint when it is in review");
 
-        previousSubmission.ifPresent(entity ->
-                checkpointSubmissionAnswerRepository.deleteAllByCheckpointSubmissionId(entity.getId()));
+        previousSubmission.ifPresent(checkpointSubmissionRepository::delete);
 
         List<CheckpointSubmissionAnswerEntity> answers = createAnswersForCheckpoint(data, checkpointId);
 
         CheckpointSubmissionEntity submission = CheckpointSubmissionEntity.builder()
-                .id(previousSubmission.map(CheckpointSubmissionEntity::getId).orElse(null))
                 .status(CheckpointSubmissionStatus.IN_REVIEW)
                 .teamId(user.getTeamId())
                 .checkpointId(checkpointId)
+                .submissionTimestamp(Instant.now())
                 .build();
         CheckpointSubmissionEntity savedEntity = checkpointSubmissionRepository.save(submission);
         checkpointSubmissionAnswerRepository.saveAll(
@@ -102,7 +103,7 @@ public class SubmissionService {
     public CheckpointSubmissionResult submitReview(long submissionId, Review review) {
         CheckpointSubmissionEntity submission = checkpointSubmissionRepository.findById(submissionId)
                 .orElseThrow(() -> new NotFoundException("Submission with id " + submissionId + " not found"));
-        if (review.getStatus() != CheckpointSubmissionStatus.ACCEPTED && review.getStatus() == CheckpointSubmissionStatus.DECLINED)
+        if (review.getStatus() != CheckpointSubmissionStatus.ACCEPTED && review.getStatus() != CheckpointSubmissionStatus.DECLINED)
             throw new BadRequestException("Invalid review status");
         if (review.getStatus() == CheckpointSubmissionStatus.ACCEPTED && review.getPoints() == null)
             throw new BadRequestException("Cannot accept submission without points");
@@ -114,12 +115,6 @@ public class SubmissionService {
     public Integer getTaskPoints(long taskId) {
         return taskSubmissionRepository.findByTaskId(taskId)
                 .map(TaskSubmissionEntity::getPoints)
-                .orElse(null);
-    }
-
-    public Integer getCheckpointPoints(long checkpointId) {
-        return checkpointSubmissionRepository.findByCheckpointId(checkpointId)
-                .map(CheckpointSubmissionEntity::getPoints)
                 .orElse(null);
     }
 
@@ -172,10 +167,12 @@ public class SubmissionService {
                 .teamId(entity.getTeamId())
                 .content(taskSubmissionAnswerRepository.findAllByTaskSubmissionId(entity.getId())
                         .stream()
+                        .filter(answer -> answer.getContent() != null)
                         .collect(Collectors.toMap(
                                 TaskSubmissionAnswerEntity::getTaskBlockId,
                                 TaskSubmissionAnswerEntity::getContent)))
                 .points(entity.getPoints())
+                .submissionTimestamp(entity.getSubmissionTimestamp())
                 .build();
     }
 
@@ -188,9 +185,11 @@ public class SubmissionService {
                 .points(entity.getPoints())
                 .content(checkpointSubmissionAnswerRepository.findAllByCheckpointSubmissionId(entity.getId())
                         .stream()
+                        .filter(answer -> answer.getContent() != null)
                         .collect(Collectors.toMap(
                                 CheckpointSubmissionAnswerEntity::getCheckpointBlockId,
                                 CheckpointSubmissionAnswerEntity::getContent)))
+                .submissionTimestamp(entity.getSubmissionTimestamp())
                 .build();
     }
 }
