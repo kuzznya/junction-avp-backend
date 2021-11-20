@@ -1,6 +1,6 @@
 <template>
   <div class="card card_modal">
-    <img class="card__close" src="src/public/close.svg" width="40px" @click="$emit('closeModal')">
+    <img class="card__close" src="../public/close.svg" width="40px" @click="$emit('closeModal')">
     <div class="card__header">
       <div class="card__header-name">
         Add new {{ paths[this.$store.state.data.length + 1] }}
@@ -34,7 +34,7 @@
         <input v-show="block.type === 'question'" v-model="block.answer" class="card__input" placeholder="answer">
         <button class="card__header-button" @click="addBlock">Add</button>
       </div>
-      <div class="tasks__item-block" v-for="block in this.blocks">
+      <div class="tasks__item-block" v-for="block in this.blocks" v-bind:key="block">
         <div class="tasks__item-question">
           {{ block.text }}
         </div>
