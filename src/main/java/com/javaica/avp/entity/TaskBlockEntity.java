@@ -4,6 +4,7 @@ import com.javaica.avp.model.TaskBlockType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import lombok.With;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -18,4 +19,6 @@ public class TaskBlockEntity {
     String content;
     TaskBlockType type;
     String answer;
+    @With
+    Integer index;
 }

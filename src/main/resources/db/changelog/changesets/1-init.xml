@@ -131,6 +131,7 @@
             </column>
             <column name="answer" type="text">
             </column>
+            <column name="index" type="int"/>
         </createTable>
 
         <createTable tableName="task_submission">

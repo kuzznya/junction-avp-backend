@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
@@ -48,9 +49,11 @@ public class TaskService {
                 .filter(task -> task.getIndex() >= index)
                 .forEach(task -> taskRepository.save(task.withIndex(task.getIndex() + 1)));
         TaskEntity taskEntity = taskRepository.save(mapTaskRequestToEntity(taskRequest).withIndex(index));
-        taskRequest.getBlocks()
-                .stream()
-                .map(block -> mapTaskBlockRequestToEntity(taskEntity.getId(), block))
+        IntStream.range(0, taskRequest.getBlocks().size())
+                .mapToObj(blockIndex -> mapTaskBlockRequestToEntity(
+                            taskEntity.getId(),
+                            taskRequest.getBlocks().get(blockIndex))
+                .withIndex(blockIndex))
                 .forEach(taskBlockRepository::save);
         return mapTaskEntityToModel(taskEntity);
     }
@@ -64,7 +67,7 @@ public class TaskService {
                 .index(taskEntity.getIndex())
                 .blocks(
                         taskBlockRepository
-                                .findAllByTaskId(taskEntity.getId())
+                                .findAllByTaskIdOrderByIndex(taskEntity.getId())
                                 .stream().map(this::mapTaskBlockEntityToModel)
                                 .collect(Collectors.toList())
                 )
@@ -75,6 +78,7 @@ public class TaskService {
         return TaskBlock.builder()
                 .content(taskBlockEntity.getContent())
                 .type(taskBlockEntity.getType())
+                .index(taskBlockEntity.getIndex())
                 .build();
     }
 
