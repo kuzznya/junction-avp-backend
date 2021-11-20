@@ -31,9 +31,7 @@
             <column name="password" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="team_id" type="int">
-                <constraints foreignKeyName="team" nullable="true"/>
-            </column>
+            <column name="team_id" type="int"/>
         </createTable>
 
         <createIndex tableName="app_user" indexName="idx_app_user_on_username">
@@ -58,7 +56,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="course_id" type="int">
-                <constraints foreignKeyName="course" nullable="false"/>
+                <constraints foreignKeyName="fk_course_group_course" references="course(id)" nullable="false" deleteCascade="true"/>
             </column>
         </createTable>
 
@@ -70,18 +68,25 @@
                 <constraints nullable="false"/>
             </column>
             <column name="group_id" type="int">
-                <constraints foreignKeyName="group" nullable="false"/>
+                <constraints foreignKeyName="fk_team_group" references="course_group(id)" nullable="false" deleteCascade="true"/>
             </column>
         </createTable>
 
         <addUniqueConstraint tableName="team" columnNames="name, group_id" constraintName="unique_name_in_group_constraint"/>
+
+        <addForeignKeyConstraint constraintName="fk_app_user_team"
+                                 baseTableName="app_user"
+                                 baseColumnNames="team_id"
+                                 referencedTableName="team"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
 
         <createTable tableName="stage">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="course_id" type="int">
-                <constraints foreignKeyName="course" nullable="false"/>
+                <constraints foreignKeyName="fk_stage_course" references="course(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="name" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -94,7 +99,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="stage_id" type="int">
-                <constraints foreignKeyName="stage"/>
+                <constraints foreignKeyName="fk_task_stage" references="stage(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="name" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -108,7 +113,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="stage_id" type="int">
-                <constraints foreignKeyName="stage"/>
+                <constraints foreignKeyName="fk_checkpoint_stage" references="stage(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="name" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -121,7 +126,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="task_id" type="int">
-                <constraints foreignKeyName="task" nullable="false"/>
+                <constraints foreignKeyName="fk_task_block_task" references="task(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="content" type="text">
                 <constraints nullable="false"/>
@@ -140,10 +145,10 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="team_id" type="int">
-                <constraints foreignKeyName="team" nullable="false"/>
+                <constraints foreignKeyName="fk_task_submission_team" references="team(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="task_id" type="int">
-                <constraints foreignKeyName="task" nullable="false"/>
+                <constraints foreignKeyName="fk_task_submission_task" references="task(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="content" type="${json_type}">
                 <constraints nullable="false"/>
@@ -158,7 +163,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="checkpoint_id" type="int">
-                <constraints foreignKeyName="task" nullable="false"/>
+                <constraints foreignKeyName="fk_checkpoint_block_checkpoint" references="checkpoint(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="content" type="text">
                 <constraints nullable="false"/>
@@ -176,10 +181,10 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="team_id" type="int">
-                <constraints foreignKeyName="team" nullable="false"/>
+                <constraints foreignKeyName="fk_checkpoint_submission_team" references="team(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="checkpoint_id" type="int">
-                <constraints foreignKeyName="checkpoint" nullable="false"/>
+                <constraints foreignKeyName="fk_checkpoint_submission_checkpoint" references="checkpoint(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="content" type="${json_type}">
                 <constraints nullable="false"/>
@@ -191,6 +196,7 @@
             <column name="review" type="text"/>
         </createTable>
     </changeSet>
+
     <changeSet id="battle" author="Max Golish">
         <createTable tableName="battle">
             <column name="id" type="int" autoIncrement="true">
@@ -200,10 +206,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="initiator_id" type="int">
-                <constraints nullable="false"/>
+                <constraints foreignKeyName="fk_battle_initiator" references="app_user(id)" nullable="false"/>
             </column>
             <column name="defender_id" type="int">
-                <constraints nullable="false"/>
+                <constraints foreignKeyName="fk_battle_defender" references="app_user(id)" nullable="false"/>
             </column>
             <column name="checkpoint_id" type="int">
                 <constraints foreignKeyName="checkpoint" nullable="false"/>
