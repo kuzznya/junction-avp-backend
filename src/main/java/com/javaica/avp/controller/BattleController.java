@@ -29,8 +29,9 @@ public class BattleController {
 
     @PostMapping("/initiate")
     public Battle initiateBattle(@RequestParam Long opponentId,
+                                 @RequestParam Long checkpointId,
                                  @AuthenticationPrincipal AppUser user) {
-        return battleService.initiateBattle(opponentId, user);
+        return battleService.initiateBattle(opponentId, checkpointId, user);
     }
 
     @PostMapping("/{battleId}/accept")

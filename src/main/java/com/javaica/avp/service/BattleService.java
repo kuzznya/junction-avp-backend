@@ -24,6 +24,8 @@ public class BattleService {
     private final TeamService teamService;
     private final TeamRepository teamRepository;
     private final CourseService courseService;
+    private final AccessService accessService;
+
 
     public List<Battle> getUserBattles(AppUser user) {
         GradedTeamProjection userTeam = teamService.getTeamOfUser(user)
@@ -47,7 +49,9 @@ public class BattleService {
         return battle;
     }
 
-    public Battle initiateBattle(Long opponentTeamId, AppUser user) {
+    public Battle initiateBattle(Long opponentTeamId, Long checkpointId, AppUser user) {
+        if (!accessService.userHasAccessToCheckpoint(checkpointId, user))
+            throw new AccessDeniedException("Cannot access checkpoint " + checkpointId);
         GradedTeamProjection userTeam = teamService.getTeamOfUser(user)
                 .orElseThrow(() -> new AccessDeniedException("User does not belong to any team"));
         if (userTeam.getId().equals(opponentTeamId))
@@ -63,6 +67,7 @@ public class BattleService {
                                 .status(BattleStatus.PENDING)
                                 .initiatorId(user.getTeamId())
                                 .defenderId(opponentTeamId)
+                                .checkpointId(checkpointId)
                                 .build()
                 )
         );
@@ -100,6 +105,7 @@ public class BattleService {
                 .status(battleEntity.getStatus())
                 .initiatorId(battleEntity.getInitiatorId())
                 .defenderId(battleEntity.getDefenderId())
+                .checkpointId(battleEntity.getCheckpointId())
                 .build();
     }
 }

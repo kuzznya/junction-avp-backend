@@ -11,4 +11,5 @@ public class Battle {
     BattleStatus status;
     Long initiatorId;
     Long defenderId;
+    Long checkpointId;
 }

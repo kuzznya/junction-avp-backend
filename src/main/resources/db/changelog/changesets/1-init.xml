@@ -205,6 +205,9 @@
             <column name="defender_id" type="int">
                 <constraints nullable="false"/>
             </column>
+            <column name="checkpoint_id" type="int">
+                <constraints foreignKeyName="checkpoint" nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

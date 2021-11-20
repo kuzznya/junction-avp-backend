@@ -19,4 +19,5 @@ public class BattleEntity {
     BattleStatus status;
     Long initiatorId;
     Long defenderId;
+    Long checkpointId;
 }
