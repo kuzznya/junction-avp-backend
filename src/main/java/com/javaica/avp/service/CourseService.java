@@ -1,6 +1,8 @@
 package com.javaica.avp.service;
 
 import com.javaica.avp.entity.CourseEntity;
+import com.javaica.avp.exception.NotFoundException;
+import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.Course;
 import com.javaica.avp.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,18 @@ import java.util.stream.StreamSupport;
 public class CourseService {
 
     private final CourseRepository repository;
+    private final GroupService groupService;
+
+    public Course getCurrentCourse(AppUser user) {
+        return entityToModel(
+                repository.findById(
+                        groupService
+                                .getCurrentGroup(user)
+                                .orElseThrow(() -> new NotFoundException("User does not belong to any group"))
+                                .getCourseId())
+                    .orElseThrow(() -> new NotFoundException("User does not belong to any course"))
+        );
+    }
 
     public Course createCourse(Course course) {
         CourseEntity entity = modelToEntity(course.withId(null));

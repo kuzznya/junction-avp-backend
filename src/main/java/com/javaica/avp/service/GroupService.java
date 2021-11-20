@@ -37,6 +37,7 @@ public class GroupService {
         return Group.builder()
                 .id(entity.getId())
                 .complexityLevel(entity.getComplexityLevel())
+                .courseId(entity.getCourseId())
                 .build();
     }
 

@@ -45,9 +45,12 @@ public class TaskService {
                         .mapToInt(TaskEntity::getIndex)
                         .max()
                         .orElse(0));
-        taskEntities.stream()
-                .filter(task -> task.getIndex() >= index)
-                .forEach(task -> taskRepository.save(task.withIndex(task.getIndex() + 1)));
+        taskRepository.saveAll(
+                taskEntities.stream()
+                        .filter(task -> task.getIndex() >= index)
+                        .map(task -> task.withIndex(task.getIndex() + 1))
+                        .collect(Collectors.toList())
+        );
         TaskEntity taskEntity = taskRepository.save(mapTaskRequestToEntity(taskRequest).withIndex(index));
         IntStream.range(0, taskRequest.getBlocks().size())
                 .mapToObj(blockIndex -> mapTaskBlockRequestToEntity(

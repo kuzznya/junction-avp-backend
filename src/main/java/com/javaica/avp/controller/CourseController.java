@@ -37,7 +37,7 @@ public class CourseController {
                     @ApiResponse(responseCode = "404", description = "Current course not found", content = @Content())
             })
     public Course getCurrentCourse(@Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
-        return null;
+        return service.getCurrentCourse(user);
     }
 
     @PostMapping

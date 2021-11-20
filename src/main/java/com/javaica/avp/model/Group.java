@@ -20,4 +20,5 @@ public class Group {
     @Min(1)
     @Max(10)
     Integer complexityLevel;
+    Long courseId;
 }
