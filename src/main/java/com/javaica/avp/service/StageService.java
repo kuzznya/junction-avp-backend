@@ -40,6 +40,7 @@ public class StageService {
 
     private Stage mapStageEntityToModel(StageEntity stageEntity) {
         return Stage.builder()
+                .id(stageEntity.getId())
                 .name(stageEntity.getName())
                 .description(stageEntity.getDescription())
                 .tasks(
