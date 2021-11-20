@@ -8,7 +8,7 @@ import com.javaica.avp.entity.TaskSubmissionEntity;
 import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.exception.NotFoundException;
 import com.javaica.avp.model.AppUser;
-import com.javaica.avp.model.TaskBlockType;
+import com.javaica.avp.model.ContentBlockType;
 import com.javaica.avp.model.TaskSubmissionResult;
 import com.javaica.avp.repository.TaskBlockRepository;
 import com.javaica.avp.repository.TaskRepository;
@@ -54,9 +54,8 @@ public class SubmissionService {
     }
 
     private int countPoints(long taskId, Map<Long, JsonNode> submission) {
-        List<TaskBlockEntity> questions = blockRepository.findAllByTaskIdAndType(taskId, TaskBlockType.QUESTION);
+        List<TaskBlockEntity> questions = blockRepository.findAllByTaskIdAndType(taskId, ContentBlockType.QUESTION);
         int correct = questions.stream()
-                .peek(entity -> log.debug("Comparing {} and {}", entity.getAnswer(), submission.get(entity.getId())))
                 .map(entity -> entity.getAnswer().equals(new JsonNodeAnswerComparator(), submission.get(entity.getId())))
                 .mapToInt(isCorrect -> isCorrect ? 1 : 0)
                 .sum();

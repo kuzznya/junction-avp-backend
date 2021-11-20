@@ -3,6 +3,7 @@ package com.javaica.avp.model;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Value
@@ -13,5 +14,6 @@ public class Task {
     String name;
     String description;
     Integer index;
-    List<TaskBlock> blocks;
+    @Builder.Default
+    List<TaskBlock> blocks = new ArrayList<>();
 }

@@ -88,16 +88,16 @@ public class TestDataCreator implements CommandLineRunner {
                 .index(0)
                 .blocks(List.of(
                         TaskBlockRequest.builder()
-                                .type(TaskBlockType.TEXT)
+                                .type(ContentBlockType.TEXT)
                                 .content("Ladno. Text.")
                                 .build(),
                         TaskBlockRequest.builder()
-                                .type(TaskBlockType.QUESTION)
+                                .type(ContentBlockType.QUESTION)
                                 .content("Ty pidor?")
                                 .answer(mapper.readTree("\"Da\""))
                                 .build(),
                         TaskBlockRequest.builder()
-                                .type(TaskBlockType.QUESTION)
+                                .type(ContentBlockType.QUESTION)
                                 .content("Place in correct order: 1 - Get up in the morning, 2 - Drink beer")
                                 .answer(mapper.readTree("[1, 2]"))
                                 .build()

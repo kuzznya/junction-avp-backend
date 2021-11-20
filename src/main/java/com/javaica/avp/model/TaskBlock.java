@@ -10,6 +10,6 @@ import lombok.Value;
 public class TaskBlock {
     Long id;
     String content;
-    TaskBlockType type;
+    ContentBlockType type;
     Integer index;
 }

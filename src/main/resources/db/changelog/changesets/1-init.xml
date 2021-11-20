@@ -130,7 +130,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="answer" type="${json_type}"/>
-            <column name="index" type="int"/>
+            <column name="index" type="int">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createTable tableName="task_submission">
@@ -162,6 +164,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="index" type="int">
                 <constraints nullable="false"/>
             </column>
         </createTable>

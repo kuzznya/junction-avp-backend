@@ -57,7 +57,7 @@ public class TaskService {
                 .mapToObj(blockIndex -> mapTaskBlockRequestToEntity(
                             taskEntity.getId(),
                             taskRequest.getBlocks().get(blockIndex))
-                .withIndex(blockIndex))
+                        .withIndex(blockIndex))
                 .forEach(taskBlockRepository::save);
         return mapTaskEntityToModel(taskEntity);
     }
