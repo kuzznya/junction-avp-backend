@@ -25,6 +25,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskBlockRepository taskBlockRepository;
     private final StageRepository stageRepository;
+    private final SubmissionService submissionService;
 
     public GradedTask getTaskById(Long taskId, AppUser user) {
         if (!accessService.userHasAccessToTask(taskId, user))
@@ -33,6 +34,14 @@ public class TaskService {
                 .findById(taskId)
                 .map(this::mapTaskEntityToGradedModel)
                 .orElseThrow(() -> new NotFoundException("Task " + taskId + " not found"));
+    }
+
+    public List<GradedTask> getGradedTasksByStageId(long stageId) {
+        return taskRepository
+                .findAllByStageIdOrderByIndex(stageId)
+                .stream()
+                .map(this::mapTaskEntityToGradedModel)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -79,7 +88,6 @@ public class TaskService {
     }
 
     private GradedTask mapTaskEntityToGradedModel(TaskEntity taskEntity) {
-
         return GradedTask.builder()
                 .id(taskEntity.getId())
                 .stageId(taskEntity.getStageId())
@@ -92,7 +100,7 @@ public class TaskService {
                                 .stream().map(this::mapTaskBlockEntityToModel)
                                 .collect(Collectors.toList())
                 )
-                .points(taskRepository.findTaskPointsById(taskEntity.getId()))
+                .points(submissionService.getTaskPoints(taskEntity.getId()))
                 .build();
     }
 

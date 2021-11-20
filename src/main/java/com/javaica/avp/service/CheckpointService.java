@@ -56,6 +56,12 @@ public class CheckpointService {
         return checkpoint;
     }
 
+    public GradedCheckpoint getGradedCheckpointByStageId(Long stageId, AppUser user) {
+        return checkpointRepository.findByStageId(stageId)
+                .map(checkpoint -> mapCheckpointEntityToGradedModel(checkpoint, user))
+                .orElse(null);
+    }
+
     private GradedCheckpoint mapCheckpointEntityToGradedModel(CheckpointEntity entity, AppUser user) {
         GradedCheckpointProjection checkpointProjection = checkpointRepository
                 .findByStageIdWithSubmission(entity.getStageId(), user.getTeamId())
