@@ -7,7 +7,6 @@ import com.javaica.avp.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -109,10 +108,25 @@ public class TestDataCreator implements CommandLineRunner {
         Task task = taskService.saveTask(taskRequest);
         log.info("Task {} created", task);
 
-        CheckpointRequest checkpoint = CheckpointRequest.builder()
+        CheckpointRequest checkpointRequest = CheckpointRequest.builder()
                 .stageId(stage.getId())
                 .name("Very important checkpoints")
                 .description("Not very important actually")
-                .build();
+                .blocks(List.of(
+                        CheckpointBlock.builder()
+                                .type(ContentBlockType.TEXT)
+                                .content("Here you can find the most important task in this stage. Keep calm and answer.")
+                                .build(),
+                        CheckpointBlock.builder()
+                                .type(ContentBlockType.QUESTION)
+                                .content("Da?")
+                                .build(),
+                        CheckpointBlock.builder()
+                                .type(ContentBlockType.QUESTION)
+                                .content("Net?")
+                                .build()
+                )).build();
+        Checkpoint checkpoint = checkpointService.createCheckpoint(checkpointRequest);
+        log.info("Checkpoint {} created", checkpoint);
     }
 }

@@ -4,8 +4,11 @@ import com.javaica.avp.model.CheckpointSubmissionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import lombok.With;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
+
+import java.time.Instant;
 
 @Table("checkpoint_submission")
 @Value
@@ -16,6 +19,11 @@ public class CheckpointSubmissionEntity {
     Long id;
     Long teamId;
     Long checkpointId;
+    @With
     CheckpointSubmissionStatus status;
+    @With
     Integer points;
+    @With
+    String review;
+    Instant submissionTimestamp;
 }
