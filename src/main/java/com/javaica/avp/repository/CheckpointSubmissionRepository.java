@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface CheckpointSubmissionRepository extends CrudRepository<CheckpointSubmissionEntity, Long> {
-    Optional<CheckpointSubmissionEntity> findByCheckpointId(Long id);
+    Optional<CheckpointSubmissionEntity> findByCheckpointId(long id);
 }

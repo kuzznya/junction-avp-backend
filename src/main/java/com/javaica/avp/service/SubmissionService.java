@@ -2,12 +2,10 @@ package com.javaica.avp.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaica.avp.entity.*;
+import com.javaica.avp.exception.BadRequestException;
 import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.exception.NotFoundException;
-import com.javaica.avp.model.AppUser;
-import com.javaica.avp.model.CheckpointSubmissionStatus;
-import com.javaica.avp.model.ContentBlockType;
-import com.javaica.avp.model.TaskSubmissionResult;
+import com.javaica.avp.model.*;
 import com.javaica.avp.repository.*;
 import com.javaica.avp.util.JsonNodeAnswerComparator;
 import lombok.RequiredArgsConstructor;
@@ -57,11 +55,11 @@ public class SubmissionService {
                 answers.stream()
                         .map(answer -> answer.withTaskSubmissionId(savedEntity.getId()))
                         .collect(Collectors.toList()));
-        return entityToModel(savedEntity);
+        return taskEntityToModel(savedEntity);
     }
 
     @Transactional
-    public void submitCheckpoint(long checkpointId, Map<String, JsonNode> data, AppUser user) {
+    public CheckpointSubmissionResult submitCheckpoint(long checkpointId, Map<String, JsonNode> data, AppUser user) {
         if (!accessService.userHasAccessToCheckpoint(checkpointId, user))
             throw new ForbiddenException("User doesn't have access to checkpoint");
         if (!checkpointRepository.existsById(checkpointId))
@@ -78,14 +76,7 @@ public class SubmissionService {
         previousSubmission.ifPresent(entity ->
                 checkpointSubmissionAnswerRepository.deleteAllByCheckpointSubmissionId(entity.getId()));
 
-        List<CheckpointSubmissionAnswerEntity> answers = checkpointBlockRepository.findAllByCheckpointIdOrderByIndex(checkpointId)
-                .stream()
-                .filter(entity -> entity.getType() == ContentBlockType.QUESTION)
-                .map(entity -> CheckpointSubmissionAnswerEntity.builder()
-                        .checkpointBlockId(entity.getId())
-                        .content(data.get(entity.getId().toString()))
-                        .build())
-                .collect(Collectors.toList());
+        List<CheckpointSubmissionAnswerEntity> answers = createAnswersForCheckpoint(data, checkpointId);
 
         CheckpointSubmissionEntity submission = CheckpointSubmissionEntity.builder()
                 .id(previousSubmission.map(CheckpointSubmissionEntity::getId).orElse(null))
@@ -99,6 +90,25 @@ public class SubmissionService {
                         .map(answer -> answer.withCheckpointSubmissionId(savedEntity.getId()))
                         .collect(Collectors.toList()));
 
+        return checkpointEntityToModel(savedEntity);
+    }
+
+    public List<CheckpointSubmissionResult> getAllSubmissions(long checkpointId) {
+        return checkpointSubmissionRepository.findByCheckpointId(checkpointId).stream()
+                .map(this::checkpointEntityToModel)
+                .collect(Collectors.toList());
+    }
+
+    public CheckpointSubmissionResult submitReview(long submissionId, Review review) {
+        CheckpointSubmissionEntity submission = checkpointSubmissionRepository.findById(submissionId)
+                .orElseThrow(() -> new NotFoundException("Submission with id " + submissionId + " not found"));
+        if (review.getStatus() != CheckpointSubmissionStatus.ACCEPTED && review.getStatus() == CheckpointSubmissionStatus.DECLINED)
+            throw new BadRequestException("Invalid review status");
+        if (review.getStatus() == CheckpointSubmissionStatus.ACCEPTED && review.getPoints() == null)
+            throw new BadRequestException("Cannot accept submission without points");
+        return checkpointEntityToModel(checkpointSubmissionRepository.save(submission.withReview(review.getReview())
+                .withStatus(review.getStatus())
+                .withPoints(review.getPoints())));
     }
 
     private List<TaskSubmissionAnswerEntity> checkAnswers(Map<Long, JsonNode> submission,
@@ -114,6 +124,16 @@ public class SubmissionService {
                             .taskBlockId(entity.getId())
                             .build();
                 }).collect(Collectors.toList());
+    }
+
+    private List<CheckpointSubmissionAnswerEntity> createAnswersForCheckpoint(Map<String, JsonNode> data, long checkpointId) {
+        return checkpointBlockRepository.findAllByCheckpointIdAndType(checkpointId, ContentBlockType.QUESTION)
+                .stream()
+                .map(entity -> CheckpointSubmissionAnswerEntity.builder()
+                        .checkpointBlockId(entity.getId())
+                        .content(data.get(entity.getId().toString()))
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private int countPoints(List<TaskSubmissionAnswerEntity> answers, List<TaskBlockEntity> questions) {
@@ -134,7 +154,7 @@ public class SubmissionService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private TaskSubmissionResult entityToModel(TaskSubmissionEntity entity) {
+    private TaskSubmissionResult taskEntityToModel(TaskSubmissionEntity entity) {
         return TaskSubmissionResult.builder()
                 .id(entity.getId())
                 .teamId(entity.getTeamId())
@@ -144,6 +164,21 @@ public class SubmissionService {
                                 TaskSubmissionAnswerEntity::getTaskBlockId,
                                 TaskSubmissionAnswerEntity::getContent)))
                 .points(entity.getPoints())
+                .build();
+    }
+
+    private CheckpointSubmissionResult checkpointEntityToModel(CheckpointSubmissionEntity entity) {
+        return CheckpointSubmissionResult.builder()
+                .id(entity.getId())
+                .status(entity.getStatus())
+                .review(entity.getReview())
+                .teamId(entity.getTeamId())
+                .points(entity.getPoints())
+                .content(checkpointSubmissionAnswerRepository.findAllByCheckpointSubmissionId(entity.getId())
+                        .stream()
+                        .collect(Collectors.toMap(
+                                CheckpointSubmissionAnswerEntity::getCheckpointBlockId,
+                                CheckpointSubmissionAnswerEntity::getContent)))
                 .build();
     }
 }
