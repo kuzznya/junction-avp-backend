@@ -9,7 +9,7 @@ import lombok.Value;
 @Builder
 public class Battle {
     BattleStatus status;
-    Long initiatorId;
-    Long defenderId;
+    TeamHeader initiator;
+    TeamHeader defender;
     Long checkpointId;
 }

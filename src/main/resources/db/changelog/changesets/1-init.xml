@@ -150,13 +150,24 @@
             <column name="task_id" type="int">
                 <constraints foreignKeyName="fk_task_submission_task" references="task(id)" nullable="false" deleteCascade="true"/>
             </column>
-            <column name="content" type="${json_type}">
-                <constraints nullable="false"/>
-            </column>
             <column name="points" type="int"/>
         </createTable>
 
         <addUniqueConstraint tableName="task_submission" columnNames="team_id, task_id" constraintName="unique_team_task_submission_constraint"/>
+
+        <createTable tableName="task_submission_answer">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="task_submission_id" type="int">
+                <constraints foreignKeyName="fk_answer_task_submission" references="task_submission(id)" nullable="false" deleteCascade="true"/>
+            </column>
+            <column name="task_block_id" type="int">
+                <constraints foreignKeyName="fk_answer_task_block" references="task_block(id)" nullable="false" deleteCascade="true"/>
+            </column>
+            <column name="content" type="${json_type}"/>
+            <column name="valid" type="boolean"/>
+        </createTable>
 
         <createTable tableName="checkpoint_block">
             <column name="id" type="int" autoIncrement="true">
@@ -186,14 +197,24 @@
             <column name="checkpoint_id" type="int">
                 <constraints foreignKeyName="fk_checkpoint_submission_checkpoint" references="checkpoint(id)" nullable="false" deleteCascade="true"/>
             </column>
-            <column name="content" type="${json_type}">
-                <constraints nullable="false"/>
-            </column>
             <column name="status" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="points" type="int"/>
             <column name="review" type="text"/>
+        </createTable>
+
+        <createTable tableName="checkpoint_submission_answer">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="checkpoint_submission_id" type="int">
+                <constraints foreignKeyName="fk_answer_checkpoint_submission" references="checkpoint_submission(id)" nullable="false" deleteCascade="true"/>
+            </column>
+            <column name="checkpoint_block_id" type="int">
+                <constraints foreignKeyName="fk_answer_checkpoint_block" references="checkpoint_block(id)" nullable="false" deleteCascade="true"/>
+            </column>
+            <column name="content" type="${json_type}"/>
         </createTable>
     </changeSet>
 

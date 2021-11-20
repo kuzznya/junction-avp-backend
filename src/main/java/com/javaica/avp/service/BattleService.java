@@ -2,11 +2,10 @@ package com.javaica.avp.service;
 
 import com.javaica.avp.entity.BattleEntity;
 import com.javaica.avp.entity.GradedTeamProjection;
+import com.javaica.avp.entity.TeamEntity;
 import com.javaica.avp.exception.BadRequestException;
 import com.javaica.avp.exception.NotFoundException;
-import com.javaica.avp.model.AppUser;
-import com.javaica.avp.model.Battle;
-import com.javaica.avp.model.BattleStatus;
+import com.javaica.avp.model.*;
 import com.javaica.avp.repository.BattleRepository;
 import com.javaica.avp.repository.TeamRepository;
 import lombok.AllArgsConstructor;
@@ -44,7 +43,7 @@ public class BattleService {
         GradedTeamProjection team = teamService.getTeamOfUser(user)
                 .orElseThrow(() -> new AccessDeniedException("No team found for user " + user.getUsername()));
 
-        if (!battle.getDefenderId().equals(team.getId()) || !battle.getInitiatorId().equals(team.getId()))
+        if (!battle.getDefender().getId().equals(team.getId()) || !battle.getInitiator().getId().equals(team.getId()))
             throw new AccessDeniedException("Cannot access battle " + battleId);
         return battle;
     }
@@ -96,16 +95,30 @@ public class BattleService {
                 .getId().equals(battle.getDefenderId())) {
             throw new AccessDeniedException("Cannot accept battle");
         }
-        return mapBattleEntityToModel(battleRepository.save(battle.withStatus(status)));
+        return mapBattleEntityToModel(
+                battleRepository.save(battle.withStatus(status)));
     }
 
     private Battle mapBattleEntityToModel(BattleEntity battleEntity) {
         return Battle
                 .builder()
                 .status(battleEntity.getStatus())
-                .initiatorId(battleEntity.getInitiatorId())
-                .defenderId(battleEntity.getDefenderId())
+                .initiator(
+                        teamRepository.findById(battleEntity.getInitiatorId())
+                                .map(this::teamToHeader)
+                                .orElse(null)
+                )
+                .defender(teamRepository.findById(battleEntity.getDefenderId())
+                        .map(this::teamToHeader)
+                        .orElse(null))
                 .checkpointId(battleEntity.getCheckpointId())
                 .build();
+    }
+
+    private TeamHeader teamToHeader(TeamEntity team) {
+        return new TeamHeader(
+                team.getId(),
+                team.getName()
+        );
     }
 }

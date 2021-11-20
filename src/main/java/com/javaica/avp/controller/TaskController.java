@@ -55,7 +55,7 @@ public class TaskController {
         return taskService.saveTask(taskRequest);
     }
 
-    @PostMapping("/{taskId}/submission")
+    @PostMapping("/{taskId}/submissions")
     @Operation(
             summary = "Submit task solution",
             security = @SecurityRequirement(name = "bearerAuth"),
