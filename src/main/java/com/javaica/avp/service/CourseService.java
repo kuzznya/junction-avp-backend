@@ -30,6 +30,13 @@ public class CourseService {
         );
     }
 
+    public Course getTeamCourse(Long teamId) {
+        return entityToModel(
+                repository.findCourseByTeamId(teamId)
+                        .orElseThrow(() -> new NotFoundException("Course for team " + teamId + " not found"))
+        );
+    }
+
     public Course createCourse(Course course) {
         CourseEntity entity = modelToEntity(course.withId(null));
         return entityToModel(repository.save(entity));

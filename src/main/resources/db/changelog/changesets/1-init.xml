@@ -191,4 +191,20 @@
             <column name="review" type="text"/>
         </createTable>
     </changeSet>
+    <changeSet id="battle" author="Max Golish">
+        <createTable tableName="battle">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column type="varchar(255)" name="status">
+                <constraints nullable="false"/>
+            </column>
+            <column name="initiator_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="defender_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
