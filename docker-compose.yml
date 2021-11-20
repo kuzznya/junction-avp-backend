@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    image: ghcr.io/kuzznya/junction-avp-backend:latest
+    image: registry.gitlab.com/kuzznya/junction-avp-backend:latest
     environment:
       PORT: 8080
       DB_URL: jdbc:postgresql://postgres:5432/postgres

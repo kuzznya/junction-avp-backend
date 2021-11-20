@@ -16,4 +16,4 @@ jobs:
           user: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
       - name: Remove stack
-        run: docker stack rm junction && docker volume rm junction_db-data
+        run: docker stack rm junction && docker volume rm -f junction_db-data
