@@ -7,13 +7,12 @@ import com.javaica.avp.model.*;
 import com.javaica.avp.repository.CheckpointRepository;
 import com.javaica.avp.repository.CourseRepository;
 import com.javaica.avp.repository.StageRepository;
-import com.javaica.avp.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +21,9 @@ public class StageService {
     private final AccessService accessService;
     private final CourseService courseService;
     private final StageRepository stageRepository;
-    private final TaskRepository taskRepository;
-    private final CheckpointRepository checkpointRepository;
     private final CourseRepository courseRepository;
+    private final TaskService taskService;
+    private final CheckpointService checkpointService;
 
     public List<StageHeader> getCurrentStageHeaders(AppUser user) {
         return getStageHeaders(courseService.getCurrentCourse(user).getId(), user);
@@ -52,68 +51,25 @@ public class StageService {
         return mapStageEntityToModel(stageRepository.save(mapStageModelToEntity(stage)));
     }
 
-    private Stage mapStageEntityToModel(StageEntity stageEntity) {
-        return Stage.builder()
-                .id(stageEntity.getId())
-                .name(stageEntity.getName())
-                .description(stageEntity.getDescription())
-                .tasks(getTaskHeaders(stageEntity))
-                .checkpoint(getCheckpoint(stageEntity))
-                .courseId(stageEntity.getCourseId())
-                .build();
-    }
-
     private Stage mapStageEntityToModelForUser(StageEntity stageEntity, AppUser user) {
         return Stage.builder()
                 .id(stageEntity.getId())
                 .name(stageEntity.getName())
                 .description(stageEntity.getDescription())
-                .tasks(getGradedTaskHeaders(stageEntity, user))
-                .checkpoint(getGradedCheckpoint(stageEntity, user))
+                .tasks(taskService.getGradedTasksByStageId(stageEntity.getId()))
+                .checkpoint(checkpointService.getGradedCheckpointByStageId(stageEntity.getId(), user))
                 .courseId(stageEntity.getCourseId())
                 .build();
     }
 
-    private List<TaskHeader> getTaskHeaders(StageEntity stageEntity) {
-        return taskRepository.findAllByStageIdOrderByIndex(stageEntity.getId())
-                .stream()
-                .map(task -> TaskHeader.builder()
-                        .id(task.getId())
-                        .name(task.getName())
-                        .description(task.getDescription())
-                        .index(task.getIndex())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    private List<TaskHeader> getGradedTaskHeaders(StageEntity stageEntity, AppUser user) {
-        return taskRepository.findAllByStageIdWithCalculatedPoints(stageEntity.getId(), user.getTeamId())
-                .stream()
-                .peek(System.out::println)
-                .map(header -> (TaskHeader) header)
-                .collect(Collectors.toList());
-    }
-
-    private CheckpointHeader getCheckpoint(StageEntity stageEntity) {
-        return checkpointRepository.findByStageId(stageEntity.getId())
-                .map(checkpoint -> CheckpointHeader.builder()
-                        .id(checkpoint.getId())
-                        .name(checkpoint.getName())
-                        .description(checkpoint.getDescription())
-                        .build())
-                .orElse(null);
-    }
-
-    private CheckpointHeader getGradedCheckpoint(StageEntity stageEntity, AppUser user) {
-        return checkpointRepository.findByStageIdWithSubmission(stageEntity.getId(), user.getTeamId())
-                .map(checkpoint -> GradedCheckpointHeader.builder()
-                        .id(checkpoint.getId())
-                        .name(checkpoint.getName())
-                        .description(checkpoint.getDescription())
-                        .status(checkpoint.getStatus())
-                        .points(checkpoint.getPoints())
-                        .build())
-                .orElse(null);
+    private Stage mapStageEntityToModel(StageEntity stageEntity) {
+        return Stage.builder()
+                .id(stageEntity.getId())
+                .name(stageEntity.getName())
+                .description(stageEntity.getDescription())
+                .tasks(Collections.emptyList())
+                .courseId(stageEntity.getCourseId())
+                .build();
     }
 
     private StageEntity mapStageModelToEntity(StageRequest stage) {

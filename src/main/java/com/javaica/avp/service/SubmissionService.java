@@ -101,6 +101,18 @@ public class SubmissionService {
 
     }
 
+    public Integer getTaskPoints(long taskId) {
+        return taskSubmissionRepository.findByTaskId(taskId)
+                .map(TaskSubmissionEntity::getPoints)
+                .orElse(null);
+    }
+
+    public Integer getCheckpointPoints(long checkpointId) {
+        return checkpointSubmissionRepository.findByCheckpointId(checkpointId)
+                .map(CheckpointSubmissionEntity::getPoints)
+                .orElse(null);
+    }
+
     private List<TaskSubmissionAnswerEntity> checkAnswers(Map<Long, JsonNode> submission,
                                                           List<TaskBlockEntity> questions) {
         return questions.stream()

@@ -12,6 +12,6 @@ public class Stage {
     Long courseId;
     String name;
     String description;
-    List<TaskHeader> tasks;
-    CheckpointHeader checkpoint;
+    List<GradedTask> tasks;
+    GradedCheckpoint checkpoint;
 }
