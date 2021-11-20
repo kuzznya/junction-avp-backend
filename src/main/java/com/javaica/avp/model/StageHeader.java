@@ -7,4 +7,5 @@ public class StageHeader {
     Long id;
     String name;
     String description;
+    CheckpointSubmissionStatus status;
 }

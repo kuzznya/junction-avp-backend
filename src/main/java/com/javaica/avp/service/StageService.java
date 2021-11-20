@@ -20,15 +20,20 @@ import java.util.stream.Collectors;
 public class StageService {
 
     private final AccessService accessService;
+    private final CourseService courseService;
     private final StageRepository stageRepository;
     private final TaskRepository taskRepository;
     private final CheckpointRepository checkpointRepository;
     private final CourseRepository courseRepository;
 
+    public List<StageHeader> getCurrentStageHeaders(AppUser user) {
+        return getStageHeaders(courseService.getCurrentCourse(user).getId(), user);
+    }
+
     public List<StageHeader> getStageHeaders(long courseId, AppUser user) {
         if (!accessService.userHasAccessToCourse(courseId, user))
             throw new ForbiddenException("User doesn't have access to the course");
-        return stageRepository.findAllHeadersByCourseId(courseId);
+        return stageRepository.findAllHeadersByCourseId(courseId, user.getTeamId());
     }
 
     public Stage getStageById(long stageId, AppUser user) {

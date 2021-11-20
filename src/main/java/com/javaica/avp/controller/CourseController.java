@@ -67,6 +67,19 @@ public class CourseController {
         return service.getAllCourses();
     }
 
+    @GetMapping("/current/stages")
+    @Operation(
+            summary = "Get stages for current course",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
+            })
+    public List<StageHeader> getCurrentStages(@Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
+        return stageService.getCurrentStageHeaders(user);
+    }
+
     @GetMapping("/{courseId}/stages")
     @Operation(
             summary = "Get stages for current course",
@@ -76,7 +89,7 @@ public class CourseController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
-    public List<StageHeader> getCurrentStages(@PathVariable Long courseId,
+    public List<StageHeader> getStages(@PathVariable Long courseId,
                                               @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
         return stageService.getStageHeaders(courseId, user);
     }
