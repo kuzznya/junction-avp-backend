@@ -26,12 +26,12 @@ public class TaskService {
     private final TaskBlockRepository taskBlockRepository;
     private final StageRepository stageRepository;
 
-    public Task getTaskById(Long taskId, AppUser user) {
+    public GradedTask getTaskById(Long taskId, AppUser user) {
         if (!accessService.userHasAccessToTask(taskId, user))
             throw new ForbiddenException("User doesn't have access to the task");
         return taskRepository
                 .findById(taskId)
-                .map(this::mapTaskEntityToModel)
+                .map(this::mapTaskEntityToGradedModel)
                 .orElseThrow(() -> new NotFoundException("Task " + taskId + " not found"));
     }
 
@@ -75,6 +75,24 @@ public class TaskService {
                                 .stream().map(this::mapTaskBlockEntityToModel)
                                 .collect(Collectors.toList())
                 )
+                .build();
+    }
+
+    private GradedTask mapTaskEntityToGradedModel(TaskEntity taskEntity) {
+
+        return GradedTask.builder()
+                .id(taskEntity.getId())
+                .stageId(taskEntity.getStageId())
+                .name(taskEntity.getName())
+                .description(taskEntity.getDescription())
+                .index(taskEntity.getIndex())
+                .blocks(
+                        taskBlockRepository
+                                .findAllByTaskIdOrderByIndex(taskEntity.getId())
+                                .stream().map(this::mapTaskBlockEntityToModel)
+                                .collect(Collectors.toList())
+                )
+                .points(taskRepository.findTaskPointsById(taskEntity.getId()))
                 .build();
     }
 

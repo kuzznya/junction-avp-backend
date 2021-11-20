@@ -5,6 +5,7 @@ import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.exception.NotFoundException;
 import com.javaica.avp.model.*;
 import com.javaica.avp.repository.CheckpointRepository;
+import com.javaica.avp.repository.CourseRepository;
 import com.javaica.avp.repository.StageRepository;
 import com.javaica.avp.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class StageService {
     private final StageRepository stageRepository;
     private final TaskRepository taskRepository;
     private final CheckpointRepository checkpointRepository;
+    private final CourseRepository courseRepository;
 
     public List<StageHeader> getStageHeaders(long courseId, AppUser user) {
         if (!accessService.userHasAccessToCourse(courseId, user))
@@ -30,6 +32,8 @@ public class StageService {
     }
 
     public Stage getStageById(long stageId, AppUser user) {
+        if (!accessService.userHasAccessToStage(stageId, user))
+            throw new ForbiddenException("User doesn't have access to the course");
         StageEntity stage = stageRepository
                 .findById(stageId)
                 .orElseThrow(() -> new NotFoundException("Stage " + stageId + " not found"));
@@ -38,6 +42,8 @@ public class StageService {
 
     @Transactional
     public Stage saveStage(StageRequest stage) {
+        if (!courseRepository.existsById(stage.getCourseId()))
+            throw new NotFoundException("Course " + stage.getCourseId() + " not found");
         return mapStageEntityToModel(stageRepository.save(mapStageModelToEntity(stage)));
     }
 
@@ -78,6 +84,7 @@ public class StageService {
     private List<TaskHeader> getGradedTaskHeaders(StageEntity stageEntity, AppUser user) {
         return taskRepository.findAllByStageIdWithCalculatedPoints(stageEntity.getId(), user.getTeamId())
                 .stream()
+                .peek(System.out::println)
                 .map(header -> (TaskHeader) header)
                 .collect(Collectors.toList());
     }

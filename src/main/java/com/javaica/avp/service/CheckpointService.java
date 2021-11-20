@@ -2,9 +2,13 @@ package com.javaica.avp.service;
 
 import com.javaica.avp.entity.CheckpointBlockEntity;
 import com.javaica.avp.entity.CheckpointEntity;
+import com.javaica.avp.entity.GradedCheckpointProjection;
 import com.javaica.avp.exception.AlreadyExistsException;
+import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.exception.NotFoundException;
+import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.Checkpoint;
+import com.javaica.avp.model.GradedCheckpoint;
 import com.javaica.avp.model.CheckpointBlock;
 import com.javaica.avp.repository.CheckpointBlockRepository;
 import com.javaica.avp.repository.CheckpointRepository;
@@ -17,6 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class CheckpointService {
@@ -24,6 +30,7 @@ public class CheckpointService {
     private final CheckpointRepository checkpointRepository;
     private final CheckpointBlockRepository blockRepository;
     private final StageRepository stageRepository;
+    private final AccessService accessService;
 
     @Transactional
     public Checkpoint createCheckpoint(Checkpoint checkpoint) {
@@ -42,13 +49,33 @@ public class CheckpointService {
          return mapCheckpointEntityToModel(entity);
     }
 
-    // TODO add user check & add user's info (submission status like in StageService)
-    public Checkpoint getCheckpointById(Long checkpointId) {
-        return checkpointRepository
+    public GradedCheckpoint getCheckpointById(Long checkpointId, AppUser user) {
+        GradedCheckpoint checkpoint = checkpointRepository
                 .findById(checkpointId)
-                .map(this::mapCheckpointEntityToModel)
+                .map(checkpointEntity -> mapCheckpointEntityToGradedModel(checkpointEntity, user))
                 .orElseThrow(() -> new NotFoundException("Checkpoint " + checkpointId + " does not exist"));
+        if (!accessService.userHasAccessToStage(checkpoint.getStageId(), user))
+            throw new ForbiddenException("User " + user.getUsername() + " does not have access to this course");
+        return checkpoint;
+    }
 
+    private GradedCheckpoint mapCheckpointEntityToGradedModel(CheckpointEntity entity, AppUser user) {
+        GradedCheckpointProjection checkpointProjection = checkpointRepository
+                .findByStageIdWithSubmission(entity.getStageId(), user.getTeamId())
+                .orElse(null);
+        return GradedCheckpoint.builder()
+                .id(entity.getId())
+                .stageId(entity.getStageId())
+                .name(entity.getName())
+                .description(entity.getDescription())
+                .blocks(getBlocksForCheckpoint(entity.getId()))
+                .status(Optional.ofNullable(checkpointProjection)
+                        .map(GradedCheckpointProjection::getStatus)
+                        .orElse(null))
+                .points(Optional.ofNullable(checkpointProjection)
+                        .map(GradedCheckpointProjection::getPoints)
+                        .orElse(null))
+                .build();
     }
 
     private CheckpointEntity mapCheckpointModelToEntity(Checkpoint checkpoint) {

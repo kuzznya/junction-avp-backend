@@ -4,13 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.With;
+import lombok.experimental.NonFinal;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Value
 @AllArgsConstructor
-@Builder
+@SuperBuilder
+@NonFinal
 public class Checkpoint {
     @With
     Long id;
