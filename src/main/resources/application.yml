@@ -22,6 +22,8 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
 
+data.jdbc.json-support: postgres
+
 security:
   token-ttl: 14d
   secret: ${SEC_SECRET}

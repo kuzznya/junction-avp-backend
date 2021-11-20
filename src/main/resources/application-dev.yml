@@ -8,6 +8,8 @@ spring:
     console:
       enabled: true
 
+data.jdbc.json-support: byte_array
+
 security:
   secret: 12345678
   admin:
