@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,24 +41,34 @@ public class StageService {
         StageEntity stage = stageRepository
                 .findById(stageId)
                 .orElseThrow(() -> new NotFoundException("Stage " + stageId + " not found"));
-        return mapStageEntityToModelForUser(stage, user);
+        return mapStageEntityToModelForUser(stage, user.getTeamId());
     }
 
     @Transactional
     public Stage saveStage(StageRequest stage) {
         if (!courseRepository.existsById(stage.getCourseId()))
             throw new NotFoundException("Course " + stage.getCourseId() + " not found");
+
         return mapStageEntityToModel(stageRepository.save(mapStageModelToEntity(stage)));
     }
 
-    private Stage mapStageEntityToModelForUser(StageEntity stageEntity, AppUser user) {
+    public List<Stage> getStagesByCourse(long courseId, long teamId) {
+        return stageRepository.findAllByCourseId(courseId)
+                .stream()
+                .map(stage -> mapStageEntityToModelForUser(stage, teamId))
+                .collect(Collectors.toList());
+    }
+
+
+    private Stage mapStageEntityToModelForUser(StageEntity stageEntity, long teamId) {
         return Stage.builder()
                 .id(stageEntity.getId())
                 .name(stageEntity.getName())
                 .description(stageEntity.getDescription())
                 .tasks(taskService.getGradedTasksByStageId(stageEntity.getId()))
-                .checkpoint(checkpointService.getGradedCheckpointByStageId(stageEntity.getId(), user))
+                .checkpoint(checkpointService.getGradedCheckpointByStageId(stageEntity.getId(), teamId))
                 .courseId(stageEntity.getCourseId())
+                .index(stageEntity.getIndex())
                 .build();
     }
 
@@ -68,6 +79,7 @@ public class StageService {
                 .description(stageEntity.getDescription())
                 .tasks(Collections.emptyList())
                 .courseId(stageEntity.getCourseId())
+                .index(stageEntity.getIndex())
                 .build();
     }
 
@@ -76,6 +88,11 @@ public class StageService {
                 .courseId(stage.getCourseId())
                 .name(stage.getName())
                 .description(stage.getDescription())
+                .index(stageRepository
+                        .findAllByCourseId(stage.getCourseId())
+                        .stream().mapToInt(StageEntity::getIndex)
+                        .max()
+                        .orElse(-1) + 1)
                 .build();
     }
 }

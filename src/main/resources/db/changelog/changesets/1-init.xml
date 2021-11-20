@@ -95,6 +95,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="text"/>
+            <column name="index" type="int">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createTable tableName="task">

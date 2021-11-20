@@ -14,4 +14,5 @@ public interface StageRepository extends CrudRepository<StageEntity, Long> {
             "LEFT JOIN checkpoint_submission cs ON cs.checkpoint_id = c.id " +
             "WHERE s.course_id = :courseId AND (cs.team_id IS NULL OR cs.team_id = :teamId)")
     List<StageHeader> findAllHeadersByCourseId(long courseId, long teamId);
+    List<StageEntity> findAllByCourseId(long courseId);
 }

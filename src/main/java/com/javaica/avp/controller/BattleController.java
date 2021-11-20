@@ -2,6 +2,7 @@ package com.javaica.avp.controller;
 
 import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.Battle;
+import com.javaica.avp.model.BattleProgress;
 import com.javaica.avp.service.BattleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -86,7 +87,13 @@ public class BattleController {
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
     public Battle declineBattle(@PathVariable Long battleId,
-                               @AuthenticationPrincipal AppUser user) {
+                                @AuthenticationPrincipal AppUser user) {
         return battleService.declineBattle(battleId, user);
+    }
+
+    @GetMapping("/{battleId}/progress")
+    public BattleProgress getBattleProgress(@PathVariable Long battleId,
+                                            @AuthenticationPrincipal AppUser user) {
+        return battleService.getBattleProgress(battleId);
     }
 }

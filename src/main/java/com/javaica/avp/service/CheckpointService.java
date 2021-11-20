@@ -3,7 +3,6 @@ package com.javaica.avp.service;
 import com.javaica.avp.entity.CheckpointBlockEntity;
 import com.javaica.avp.entity.CheckpointEntity;
 import com.javaica.avp.entity.GradedCheckpointProjection;
-import com.javaica.avp.exception.AlreadyExistsException;
 import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.exception.NotFoundException;
 import com.javaica.avp.model.*;
@@ -33,8 +32,9 @@ public class CheckpointService {
     public Checkpoint createCheckpoint(CheckpointRequest checkpoint) {
         if (!stageRepository.existsById(checkpoint.getStageId()))
             throw new NotFoundException("Stage " + checkpoint.getStageId() + " does not exist");
-        if (checkpointRepository.existsByStageId(checkpoint.getStageId()))
-            throw new AlreadyExistsException("Checkpoint already exists for this task");
+//        if (checkpointRepository.existsByStageId(checkpoint.getStageId()))
+//            throw new AlreadyExistsException("Checkpoint already exists for this task");
+        checkpointRepository.findByStageId(checkpoint.getStageId()).ifPresent(checkpointRepository::delete);
 
         CheckpointEntity entity = checkpointRepository.save(mapCheckpointModelToEntity(checkpoint));
         List<CheckpointBlockEntity> blocks = IntStream.range(0, checkpoint.getBlocks().size())
@@ -56,15 +56,16 @@ public class CheckpointService {
         return checkpoint;
     }
 
-    public GradedCheckpoint getGradedCheckpointByStageId(Long stageId, AppUser user) {
+
+    public GradedCheckpoint getGradedCheckpointByStageId(Long stageId, long teamId) {
         return checkpointRepository.findByStageId(stageId)
-                .map(checkpoint -> mapCheckpointEntityToGradedModel(checkpoint, user))
+                .map(checkpoint -> mapCheckpointEntityToGradedModel(checkpoint, teamId))
                 .orElse(null);
     }
 
-    private GradedCheckpoint mapCheckpointEntityToGradedModel(CheckpointEntity entity, AppUser user) {
+    private GradedCheckpoint mapCheckpointEntityToGradedModel(CheckpointEntity entity, long teamId) {
         GradedCheckpointProjection checkpointProjection = checkpointRepository
-                .findByStageIdWithSubmission(entity.getStageId(), user.getTeamId())
+                .findByStageIdWithSubmission(entity.getStageId(), teamId)
                 .orElse(null);
         return GradedCheckpoint.builder()
                 .id(entity.getId())
@@ -79,6 +80,11 @@ public class CheckpointService {
                         .map(GradedCheckpointProjection::getPoints)
                         .orElse(null))
                 .build();
+    }
+
+
+    private GradedCheckpoint mapCheckpointEntityToGradedModel(CheckpointEntity entity, AppUser user) {
+        return mapCheckpointEntityToGradedModel(entity, user.getTeamId());
     }
 
     private CheckpointEntity mapCheckpointModelToEntity(CheckpointRequest checkpoint) {

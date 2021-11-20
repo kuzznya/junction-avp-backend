@@ -16,4 +16,5 @@ public class StageEntity {
     Long courseId;
     String name;
     String description;
+    Integer index;
 }
