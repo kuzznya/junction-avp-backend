@@ -4,7 +4,6 @@ import com.javaica.avp.entity.StageEntity;
 import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.exception.NotFoundException;
 import com.javaica.avp.model.*;
-import com.javaica.avp.repository.CheckpointRepository;
 import com.javaica.avp.repository.CourseRepository;
 import com.javaica.avp.repository.StageRepository;
 import lombok.RequiredArgsConstructor;

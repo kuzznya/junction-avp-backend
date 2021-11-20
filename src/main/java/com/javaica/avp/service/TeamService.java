@@ -40,9 +40,19 @@ public class TeamService {
         return entityToModel(savedEntity);
     }
 
+    public Optional<Team> getTeam(long id) {
+        return teamRepository.findById(id).map(this::entityToModel);
+    }
+
     public Optional<GradedTeamProjection> getTeamOfUser(AppUser user) {
         return Optional.ofNullable(user.getTeamId())
                 .flatMap(teamRepository::findByIdWithPoints);
+    }
+
+    public List<GradedTeamProjection> getLeaderboard(long teamId) {
+        if (!teamRepository.existsById(teamId))
+            throw new NotFoundException("Team with id " + teamId + " not found");
+        return teamRepository.getLeaderboard(teamId);
     }
 
     public List<GradedTeamProjection> getLeaderboard(AppUser user) {

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @AllArgsConstructor
@@ -25,6 +26,18 @@ public class BattleService {
     private final CourseService courseService;
     private final AccessService accessService;
 
+    public List<Battle> getAllBattles() {
+        return StreamSupport.stream(battleRepository.findAll().spliterator(), false)
+                .map(this::mapBattleEntityToModel)
+                .collect(Collectors.toList());
+    }
+
+    public List<Battle> getTeamBattles(long teamId) {
+        return battleRepository.findAllByInitiatorIdOrDefenderId(teamId, teamId)
+                .stream()
+                .map(this::mapBattleEntityToModel)
+                .collect(Collectors.toList());
+    }
 
     public List<Battle> getUserBattles(AppUser user) {
         GradedTeamProjection userTeam = teamService.getTeamOfUser(user)
@@ -40,6 +53,8 @@ public class BattleService {
         Battle battle = battleRepository.findById(battleId)
                 .map(this::mapBattleEntityToModel)
                 .orElseThrow(() -> new NotFoundException("Battle " + battleId + " not found"));
+        if (user.getRole() == UserRole.ADMIN)
+            return battle;
         GradedTeamProjection team = teamService.getTeamOfUser(user)
                 .orElseThrow(() -> new AccessDeniedException("No team found for user " + user.getUsername()));
 

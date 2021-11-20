@@ -34,6 +34,17 @@ public class TestDataCreator implements CommandLineRunner {
     public void run(String... args) throws Exception {
         courseRepository.deleteAll();
 
+        try {
+            AppUser user = AppUser.builder()
+                    .username("admin2")
+                    .name("Admin")
+                    .surname("Another")
+                    .email("admin@email")
+                    .role(UserRole.ADMIN)
+                    .build();
+            userService.createUser(user);
+        } catch (Exception ignored) {}
+
         for (int i = 1; i <= 3; i++) {
             try {
                 AppUser user = AppUser.builder()

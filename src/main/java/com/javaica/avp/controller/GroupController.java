@@ -36,32 +36,4 @@ public class GroupController {
     public Group getCurrentGroup(@Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
         return service.getCurrentGroup(user).orElseThrow(() -> new NotFoundException("Current group not found"));
     }
-
-    @PostMapping
-    @Secured("ROLE_ADMIN")
-    @Operation(
-            summary = "Create new group",
-            security = @SecurityRequirement(name = "bearerAuth"),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
-                    @ApiResponse(responseCode = "400", description = "Bad request", content = @Content())
-            })
-    public Group createNewGroup(@RequestBody @Valid Group group) {
-        return service.createGroup(group);
-    }
-
-    @GetMapping
-    @Secured("ROLE_ADMIN")
-    @Operation(
-            summary = "Get all groups",
-            security = @SecurityRequirement(name = "bearerAuth"),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
-                    @ApiResponse(responseCode = "400", description = "Bad request", content = @Content())
-            })
-    public List<Group> getAllGroups(@RequestParam("course_id") long courseId) {
-        return service.getAllGroups(courseId);
-    }
 }

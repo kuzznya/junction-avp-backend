@@ -41,9 +41,8 @@ public class CollabController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
-    public Collab getCollabById(@PathVariable Long collabId,
-                                @AuthenticationPrincipal AppUser user) {
-        return collabService.getCollabById(collabId, user);
+    public Collab getCollabById(@PathVariable Long collabId) {
+        return collabService.getCollabById(collabId);
     }
 
     @PostMapping("/initiate")

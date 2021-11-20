@@ -12,8 +12,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @AllArgsConstructor
@@ -23,7 +23,20 @@ public class CollabService {
     private final TeamService teamService;
     private final TeamRepository teamRepository;
 
-    public Collab getCollabById(long collabId, AppUser user) {
+    public List<Collab> getAllCollabs() {
+        return StreamSupport.stream(collabRepository.findAll().spliterator(), false)
+                .map(this::mapCollabEntityToModel)
+                .collect(Collectors.toList());
+    }
+
+    public List<Collab> getTeamCollabs(long teamId) {
+        return collabRepository.findAllByRequesterIdOrHelperId(teamId, teamId)
+                .stream()
+                .map(this::mapCollabEntityToModel)
+                .collect(Collectors.toList());
+    }
+
+    public Collab getCollabById(long collabId) {
 
         return collabRepository.findById(collabId)
                 .map(this::mapCollabEntityToModel)
