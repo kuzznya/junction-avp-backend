@@ -3,7 +3,6 @@ package com.javaica.avp.service;
 import com.javaica.avp.entity.CheckpointBlockEntity;
 import com.javaica.avp.entity.CheckpointEntity;
 import com.javaica.avp.entity.GradedCheckpointProjection;
-import com.javaica.avp.exception.AlreadyExistsException;
 import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.exception.NotFoundException;
 import com.javaica.avp.model.*;
@@ -33,8 +32,9 @@ public class CheckpointService {
     public Checkpoint createCheckpoint(CheckpointRequest checkpoint) {
         if (!stageRepository.existsById(checkpoint.getStageId()))
             throw new NotFoundException("Stage " + checkpoint.getStageId() + " does not exist");
-        if (checkpointRepository.existsByStageId(checkpoint.getStageId()))
-            throw new AlreadyExistsException("Checkpoint already exists for this task");
+//        if (checkpointRepository.existsByStageId(checkpoint.getStageId()))
+//            throw new AlreadyExistsException("Checkpoint already exists for this task");
+        checkpointRepository.findByStageId(checkpoint.getStageId()).ifPresent(checkpointRepository::delete);
 
         CheckpointEntity entity = checkpointRepository.save(mapCheckpointModelToEntity(checkpoint));
         List<CheckpointBlockEntity> blocks = IntStream.range(0, checkpoint.getBlocks().size())
