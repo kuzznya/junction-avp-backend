@@ -16,7 +16,7 @@ public interface TaskRepository extends CrudRepository<TaskEntity, Long> {
             "JOIN team ON team.group_id = g.id " +
             "LEFT JOIN task_submission ts ON ts.team_id = team.id " +
             "WHERE s.id = :stageId AND team.id = :teamId " +
-            "GROUP BY t.id " +
+            "GROUP BY t.id, ts.points " +
             "ORDER BY t.index")
     List<GradedTaskHeader> findAllByStageIdWithCalculatedPoints(long stageId, long teamId);
 
