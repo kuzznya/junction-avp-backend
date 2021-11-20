@@ -7,6 +7,7 @@ import com.javaica.avp.model.Task;
 import com.javaica.avp.model.TaskBlock;
 import com.javaica.avp.model.TaskBlockRequest;
 import com.javaica.avp.model.TaskRequest;
+import com.javaica.avp.repository.StageRepository;
 import com.javaica.avp.repository.TaskBlockRepository;
 import com.javaica.avp.repository.TaskRepository;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskBlockRepository taskBlockRepository;
+    private final StageRepository stageRepository;
 
     public Task getTaskById(Long taskId) {
         return taskRepository
@@ -29,6 +31,8 @@ public class TaskService {
     }
 
     public Task saveTask(TaskRequest taskRequest) {
+        if (!stageRepository.existsById(taskRequest.getStageId()))
+            throw new NotFoundException("Stage " + taskRequest.getStageId() + " not found");
         TaskEntity taskEntity = taskRepository.save(mapTaskRequestToEntity(taskRequest));
         taskRequest.getBlocks()
                 .stream()

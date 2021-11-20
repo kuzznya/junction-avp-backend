@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface CheckpointRepository extends CrudRepository<CheckpointEntity, Long> {
     Optional<CheckpointEntity> findByStageId(Long stageId);
+    boolean existsByStageId(long stageId);
 }

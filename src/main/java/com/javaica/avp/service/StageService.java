@@ -29,7 +29,7 @@ public class StageService {
         return mapStageEntityToModel(
                 stageRepository
                         .findById(stageId)
-                        .orElseThrow(() -> new NotFoundException("Stage " + stageId + "not found"))
+                        .orElseThrow(() -> new NotFoundException("Stage " + stageId + " not found"))
         );
     }
 
