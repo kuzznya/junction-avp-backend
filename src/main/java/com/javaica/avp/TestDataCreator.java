@@ -1,13 +1,7 @@
 package com.javaica.avp;
 
-import com.javaica.avp.model.AppUser;
-import com.javaica.avp.model.Course;
-import com.javaica.avp.model.Group;
-import com.javaica.avp.model.Team;
-import com.javaica.avp.service.CourseService;
-import com.javaica.avp.service.GroupService;
-import com.javaica.avp.service.TeamService;
-import com.javaica.avp.service.UserService;
+import com.javaica.avp.model.*;
+import com.javaica.avp.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -26,6 +20,8 @@ public class TestDataCreator implements CommandLineRunner {
     private final CourseService courseService;
     private final GroupService groupService;
     private final TeamService teamService;
+    private final StageService stageService;
+    private final TaskService taskService;
 
     @Override
     public void run(String... args) {
@@ -40,6 +36,15 @@ public class TestDataCreator implements CommandLineRunner {
             user = userService.createUser(user);
             log.info("User {} created", user);
         }
+        AppUser userWithoutCourse = AppUser.builder()
+                .username("user_without_course")
+                .name("User")
+                .surname("Surname")
+                .email("user@mail")
+                .password("password")
+                .build();
+        userWithoutCourse = userService.createUser(userWithoutCourse);
+
         Course course = Course.builder()
                 .name("Test course")
                 .description("Test description")
@@ -63,5 +68,32 @@ public class TestDataCreator implements CommandLineRunner {
                 .build();
         team2 = teamService.createTeam(group.getId(), team2);
         log.info("Team {} created", team2);
+
+        StageRequest stageRequest = StageRequest.builder()
+                .name("Stage 1")
+                .description("First stage")
+                .courseId(course.getId())
+                .build();
+        var stage = stageService.saveStage(stageRequest);
+        log.info("Stage {} created", stage);
+
+        TaskRequest taskRequest = TaskRequest.builder()
+                .name("Task 1")
+                .description("First task")
+                .stageId(stage.getId())
+                .blocks(List.of(
+                        TaskBlockRequest.builder()
+                                .type(TaskBlockType.TEXT)
+                                .content("Ladno. Text.")
+                                .build(),
+                        TaskBlockRequest.builder()
+                                .type(TaskBlockType.QUESTION)
+                                .content("Ty pidor?")
+                                .answer("Da")
+                                .build()
+                        )
+                ).build();
+        Task task = taskService.saveTask(taskRequest);
+        log.info("Task {} created", task);
     }
 }

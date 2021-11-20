@@ -18,13 +18,12 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/courses/{courseId}/groups")
 @RequiredArgsConstructor
 public class GroupController {
 
     private final GroupService service;
 
-    @GetMapping("/current")
+    @GetMapping("/groups/current")
     @Operation(
             summary = "Get current group",
             security = @SecurityRequirement(name = "bearerAuth"),
@@ -37,7 +36,7 @@ public class GroupController {
         return service.getCurrentGroup(user).orElseThrow(() -> new NotFoundException("Current group not found"));
     }
 
-    @PostMapping
+    @PostMapping("/courses/{courseId}/groups")
     @Secured("ROLE_ADMIN")
     @Operation(
             summary = "Create new group",
@@ -52,7 +51,7 @@ public class GroupController {
         return service.createGroup(courseId, group);
     }
 
-    @GetMapping
+    @GetMapping("/courses/{courseId}/groups")
     @Secured("ROLE_ADMIN")
     @Operation(
             summary = "Get all groups",
