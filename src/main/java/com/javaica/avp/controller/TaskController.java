@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.javaica.avp.model.AppUser;
 import com.javaica.avp.model.Task;
 import com.javaica.avp.model.TaskRequest;
+import com.javaica.avp.model.TaskSubmissionResult;
+import com.javaica.avp.service.SubmissionService;
 import com.javaica.avp.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/tasks")
@@ -23,6 +26,7 @@ import javax.validation.Valid;
 public class TaskController {
 
     private final TaskService taskService;
+    private final SubmissionService submissionService;
 
     @GetMapping("/{taskId}")
     @Operation(
@@ -35,7 +39,7 @@ public class TaskController {
             })
     public Task getStageTaskById(@PathVariable Long taskId,
                                  @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
-        return taskService.getTaskById(taskId);
+        return taskService.getTaskById(taskId, user);
     }
 
     @PostMapping
@@ -60,9 +64,9 @@ public class TaskController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
-    public void submitTaskSolution(@PathVariable Long taskId,
-                                   @RequestBody JsonNode submission,
-                                   @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
-
+    public TaskSubmissionResult submitTaskSolution(@PathVariable long taskId,
+                                                   @RequestBody Map<String, JsonNode> submission,
+                                                   @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
+        return submissionService.submitTask(taskId, submission, user);
     }
 }
