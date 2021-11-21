@@ -10,7 +10,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -253,11 +252,19 @@ public class TestDataCreator implements CommandLineRunner {
                 .stageId(stage5.getId())
                 .index(0)
                 .blocks(List.of(
-                                TaskBlockRequest.builder()
-                                        .type(ContentBlockType.QUESTION)
-                                        .content("Is an MVP suitable for entering the IPO")
-                                        .answer(mapper.readTree("\"no\""))
-                                        .build()
+                        TaskBlockRequest.builder()
+                                .type(ContentBlockType.TEXT)
+                                .content("An IPO is an initial public offering. In an IPO, a privately owned company " +
+                                        "lists its shares on a stock exchange, making them available for purchase by " +
+                                        "the general public. Many people think of IPOs as big money-making " +
+                                        "opportunities—high-profile companies grab headlines with huge share price " +
+                                        "gains when they go public.")
+                                .build(),
+                            TaskBlockRequest.builder()
+                                    .type(ContentBlockType.QUESTION)
+                                    .content("Is an MVP suitable for entering the IPO?")
+                                    .answer(mapper.readTree("\"no\""))
+                                    .build()
                         )
                 ).build();
         Task task5 = taskService.saveTask(taskRequest5);
