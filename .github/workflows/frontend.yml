@@ -16,7 +16,7 @@ jobs:
       - name: Build container
         run: >
           docker build -t registry.gitlab.com/kuzznya/junction-avp-frontend:latest .
-        working-directory: client
+        working-directory: front-admin
       - name: Login with docker
         run: >
           echo ${{ secrets.GITLAB_TOKEN }} | docker login --username kuzznya
