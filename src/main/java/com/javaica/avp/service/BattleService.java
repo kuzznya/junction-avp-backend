@@ -36,21 +36,19 @@ public class BattleService {
                 .collect(Collectors.toList());
     }
 
-    public List<Battle> getTeamBattles(long teamId) {
-        return battleRepository.findAllByInitiatorIdOrDefenderId(teamId, teamId)
-                .stream()
+    public Battle getTeamBattles(long teamId) {
+        return battleRepository.findByInitiatorIdOrDefenderId(teamId, teamId)
                 .map(this::mapBattleEntityToModel)
-                .collect(Collectors.toList());
+                .orElseThrow(NotFoundException::new);
     }
 
-    public List<Battle> getUserBattles(AppUser user) {
+    public Battle getUserBattle(AppUser user) {
         GradedTeamProjection userTeam = teamService.getTeamOfUser(user)
                 .orElseThrow(() -> new AccessDeniedException("No team found for user " + user.getUsername()));
         return battleRepository
-                .findAllByInitiatorIdOrDefenderId(userTeam.getId(), userTeam.getId())
-                .stream()
+                .findByInitiatorIdOrDefenderId(userTeam.getId(), userTeam.getId())
                 .map(this::mapBattleEntityToModel)
-                .collect(Collectors.toList());
+                .orElseThrow(NotFoundException::new);
     }
 
     public Battle getBattleById(Long battleId, AppUser user) {
@@ -121,6 +119,7 @@ public class BattleService {
     private Battle mapBattleEntityToModel(BattleEntity battleEntity) {
         return Battle
                 .builder()
+                .id(battleEntity.getId())
                 .status(battleEntity.getStatus())
                 .initiator(
                         teamRepository.findById(battleEntity.getInitiatorId())
@@ -149,6 +148,10 @@ public class BattleService {
                 .initiatorProgress(getTeamProgress(battleEntity.getInitiatorId(), battleEntity.getCheckpointId()))
                 .defenderProgress(getTeamProgress(battleEntity.getDefenderId(), battleEntity.getCheckpointId()))
                 .build();
+    }
+
+    public BattleProgress getCurrentBattleProgress(AppUser user) {
+        return getBattleProgress(getUserBattle(user).getId());
     }
 
     private List<StageProgress> getTeamProgress(long teamId, long targetCheckpointId) {

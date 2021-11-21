@@ -12,8 +12,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/battles")
 @AllArgsConstructor
@@ -30,8 +28,8 @@ public class BattleController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
-    public List<Battle> getUserBattles(@AuthenticationPrincipal AppUser user) {
-        return battleService.getUserBattles(user);
+    public Battle getUserBattle(@AuthenticationPrincipal AppUser user) {
+        return battleService.getUserBattle(user);
     }
 
     @GetMapping("/{battleId}")
@@ -92,8 +90,12 @@ public class BattleController {
     }
 
     @GetMapping("/{battleId}/progress")
-    public BattleProgress getBattleProgress(@PathVariable Long battleId,
-                                            @AuthenticationPrincipal AppUser user) {
+    public BattleProgress getBattleProgress(@PathVariable Long battleId) {
         return battleService.getBattleProgress(battleId);
+    }
+
+    @GetMapping("/current/progress")
+    public BattleProgress getCurrentBattleProgress(@AuthenticationPrincipal AppUser user) {
+        return battleService.getCurrentBattleProgress(user);
     }
 }
