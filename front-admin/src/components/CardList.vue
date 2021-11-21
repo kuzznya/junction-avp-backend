@@ -12,23 +12,23 @@
     </div>
     <div v-show="this.$store.state.data.length !== 3" class="card__content">
       <div class="card__list-titles">
-        <div class="card__list-item-chunk card__list-item-chunk_title" v-for="item in Object.keys(this.$store.state.data[this.$store.state.data.length - 1][0])">
+        <div class="card__list-item-chunk card__list-item-chunk_title" v-for="item in Object.keys(this.$store.state.data[this.$store.state.data.length - 1][0])" v-bind:key="item.id">
           {{ item }}
         </div>
       </div>
-      <div class="card__list-item" v-for="item in this.$store.state.data[this.$store.state.data.length - 1]" @click="addEntities">
-        <div class="card__list-item-chunk" v-for="key in Object.keys(item)">{{item[key]}}</div>
+      <div class="card__list-item" v-for="item in this.$store.state.data[this.$store.state.data.length - 1]" v-bind:key="item.id" @click="addEntities">
+        <div class="card__list-item-chunk" v-for="key in Object.keys(item)" v-bind:key="key">{{item[key]}}</div>
       </div>
     </div>
       <div v-show="this.$store.state.data.length === 3" class="tasks">
-        <div class="tasks__item" v-for="item in this.$store.state.data[this.$store.state.data.length - 1]">
+        <div class="tasks__item" v-for="item in this.$store.state.data[this.$store.state.data.length - 1]" v-bind:key="item.id">
           <div class="tasks__item-name">
             {{item.name}}
           </div>
           <div class="tasks__item-description">
             {{item.description}}
           </div>
-          <div class="tasks__item-block" v-for="block in item.blocks">
+          <div class="tasks__item-block" v-for="block in item.blocks" v-bind:key="block">
             <div class="tasks__item-question">
               {{ block.content }}
             </div>

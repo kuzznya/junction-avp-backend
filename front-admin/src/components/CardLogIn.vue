@@ -1,7 +1,7 @@
 <template>
   <div class="card card_modal">
     <div class="card__header">
-      <img src="src/public/logo.svg" width="40">
+      <img src="../public/logo.svg" width="40">
       <div class="card__header-name card__header-name_moved">
         Admin
       </div>
