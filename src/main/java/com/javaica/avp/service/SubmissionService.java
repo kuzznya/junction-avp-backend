@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 public class SubmissionService {
 
     private final AccessService accessService;
+    private final BattleService battleService;
     private final TaskRepository taskRepository;
     private final CheckpointRepository checkpointRepository;
     private final TaskBlockRepository blockRepository;
@@ -67,13 +68,13 @@ public class SubmissionService {
         if (!checkpointRepository.existsById(checkpointId))
             throw new NotFoundException("Checkpoint with id " + checkpointId + " not found");
 
-        Optional<CheckpointSubmissionEntity> previousSubmission = checkpointSubmissionRepository.findByCheckpointId(checkpointId);
+        Optional<CheckpointSubmissionEntity> previousSubmission = checkpointSubmissionRepository.findByCheckpointIdAndTeamId(checkpointId, user.getTeamId());
 
-        boolean isInReview = previousSubmission
-                .map(entity -> entity.getStatus() == CheckpointSubmissionStatus.IN_REVIEW)
-                .orElse(false);
-        if (isInReview)
-            throw new ForbiddenException("Cannot resubmit checkpoint when it is in review");
+        boolean canBeSubmitted = previousSubmission
+                .map(entity -> entity.getStatus() == CheckpointSubmissionStatus.DECLINED)
+                .orElse(true);
+        if (!canBeSubmitted)
+            throw new ForbiddenException("Cannot resubmit checkpoint not in DECLINED status");
 
         previousSubmission.ifPresent(checkpointSubmissionRepository::delete);
 
@@ -95,9 +96,15 @@ public class SubmissionService {
     }
 
     public List<CheckpointSubmissionResult> getAllSubmissions(long checkpointId) {
-        return checkpointSubmissionRepository.findByCheckpointId(checkpointId).stream()
+        return checkpointSubmissionRepository.findByCheckpointId(checkpointId)
+                .stream()
                 .map(this::checkpointEntityToModel)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<CheckpointSubmissionResult> getSubmissionOfTeam(long checkpointId, long teamId) {
+        return checkpointSubmissionRepository.findByCheckpointIdAndTeamId(checkpointId, teamId)
+                .map(this::checkpointEntityToModel);
     }
 
     public CheckpointSubmissionResult submitReview(long submissionId, Review review) {
@@ -107,9 +114,18 @@ public class SubmissionService {
             throw new BadRequestException("Invalid review status");
         if (review.getStatus() == CheckpointSubmissionStatus.ACCEPTED && review.getPoints() == null)
             throw new BadRequestException("Cannot accept submission without points");
-        return checkpointEntityToModel(checkpointSubmissionRepository.save(submission.withReview(review.getReview())
+
+        CheckpointSubmissionResult result = checkpointEntityToModel(checkpointSubmissionRepository.save(submission.withReview(review.getReview())
                 .withStatus(review.getStatus())
                 .withPoints(review.getPoints())));
+
+        battleService.onSubmissionReview(result);
+
+        return result;
+    }
+
+    public void onBattleWon(long submissionId) {
+        checkpointSubmissionRepository.updateCheckpointSubmissionOnBattleWon(submissionId);
     }
 
     public Integer getTaskPoints(long taskId) {
@@ -179,6 +195,7 @@ public class SubmissionService {
     private CheckpointSubmissionResult checkpointEntityToModel(CheckpointSubmissionEntity entity) {
         return CheckpointSubmissionResult.builder()
                 .id(entity.getId())
+                .checkpointId(entity.getCheckpointId())
                 .status(entity.getStatus())
                 .review(entity.getReview())
                 .teamId(entity.getTeamId())

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -22,13 +23,14 @@ import java.util.stream.StreamSupport;
 @AllArgsConstructor
 public class BattleService {
 
-    private final BattleRepository battleRepository;
     private final TeamService teamService;
-    private final TeamRepository teamRepository;
     private final CourseService courseService;
     private final AccessService accessService;
-    private final CheckpointService checkpointService;
     private final StageService stageService;
+    private final SubmissionService submissionService;
+
+    private final TeamRepository teamRepository;
+    private final BattleRepository battleRepository;
 
     public List<Battle> getAllBattles() {
         return StreamSupport.stream(battleRepository.findAll().spliterator(), false)
@@ -65,6 +67,30 @@ public class BattleService {
         return battle;
     }
 
+    public void onSubmissionReview(CheckpointSubmissionResult result) {
+        Optional<Battle> battleOptional = battleRepository.findByInitiatorIdOrDefenderId(result.getTeamId(), result.getTeamId()).map(this::mapBattleEntityToModel);
+        if (battleOptional.isEmpty())
+            return;
+        Battle battle = battleOptional.get();
+        if (!Objects.equals(battle.getCheckpointId(), result.getCheckpointId()))
+            return;
+        TeamHeader opponent = battle.getInitiator().getId().equals(result.getTeamId()) ? battle.getDefender() : battle.getInitiator();
+        Optional<CheckpointSubmissionResult> opponentSubmission = submissionService.getSubmissionOfTeam(result.getCheckpointId(), opponent.getId());
+        if (opponentSubmission.isEmpty()) {
+            onBattleWon(battle, result.getId());
+        } else {
+            CheckpointSubmissionResult opponentResult = opponentSubmission.get();
+            if (opponentResult.getStatus() == CheckpointSubmissionStatus.DECLINED ||
+                    opponentResult.getStatus() == CheckpointSubmissionStatus.NEW) {
+                onBattleWon(battle, result.getId());
+            }
+            if (opponentResult.getStatus() == CheckpointSubmissionStatus.IN_REVIEW)
+                return;
+            long winnerId = result.getSubmissionTimestamp().isBefore(opponentResult.getSubmissionTimestamp()) ? result.getId() : opponentResult.getId();
+            onBattleWon(battle, winnerId);
+        }
+    }
+
     public Battle initiateBattle(Long opponentTeamId, Long checkpointId, AppUser user) {
         if (!accessService.userHasAccessToCheckpoint(checkpointId, user))
             throw new AccessDeniedException("Cannot access checkpoint " + checkpointId);
@@ -95,6 +121,13 @@ public class BattleService {
 
     public Battle declineBattle(Long battleId, AppUser user) {
         return setBattleStatus(battleId, user, BattleStatus.DECLINED);
+    }
+
+    private void onBattleWon(Battle battle, long submissionId) {
+        BattleEntity entity = battleRepository.findById(battle.getId())
+                .orElseThrow(() -> new NotFoundException("Battle " + battle.getId() + " not found"));
+        battleRepository.save(entity.withStatus(BattleStatus.FINISHED));
+        submissionService.onBattleWon(submissionId);
     }
 
     private Battle setBattleStatus(Long battleId,
