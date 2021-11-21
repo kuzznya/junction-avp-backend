@@ -8,7 +8,7 @@ import com.javaica.avp.exception.NotFoundException;
 import com.javaica.avp.model.*;
 import com.javaica.avp.repository.BattleRepository;
 import com.javaica.avp.repository.TeamRepository;
-import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-@AllArgsConstructor
 public class BattleService {
 
     private final TeamService teamService;
@@ -31,6 +30,22 @@ public class BattleService {
 
     private final TeamRepository teamRepository;
     private final BattleRepository battleRepository;
+
+    public BattleService(TeamService teamService,
+                         CourseService courseService,
+                         AccessService accessService,
+                         @Lazy StageService stageService,
+                         @Lazy SubmissionService submissionService,
+                         TeamRepository teamRepository,
+                         BattleRepository battleRepository) {
+        this.teamService = teamService;
+        this.courseService = courseService;
+        this.accessService = accessService;
+        this.stageService = stageService;
+        this.submissionService = submissionService;
+        this.teamRepository = teamRepository;
+        this.battleRepository = battleRepository;
+    }
 
     public List<Battle> getAllBattles() {
         return StreamSupport.stream(battleRepository.findAll().spliterator(), false)
