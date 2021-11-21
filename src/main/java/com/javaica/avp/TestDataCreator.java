@@ -160,23 +160,26 @@ public class TestDataCreator implements CommandLineRunner {
 
         TaskRequest taskRequest1 = TaskRequest.builder()
                 .name("Team building")
-                .description("Learn to work in a team")
+                .description("Learn to work in a team. " +
+                        "In this task you have to connect with your team and discuss the first organizational issues")
                 .stageId(stage1.getId())
                 .index(0)
                 .blocks(List.of(
                         TaskBlockRequest.builder()
                                 .type(ContentBlockType.TEXT)
-                                .content("Block 1")
+                                .content("the action or process of causing a group of people to work together effectively as a team, " +
+                                        "especially by means of activities and events designed to increase motivation and promote cooperation.\n" +
+                                        "\"companies are starting to turn to arts-based training programmes as a way of team building and improving morale\"")
                                 .build(),
                         TaskBlockRequest.builder()
                                 .type(ContentBlockType.QUESTION)
-                                .content("Block 2")
-                                .answer(mapper.readTree("\"2\""))
+                                .content("Цhat is the most important thing when participating in a team?")
+                                .answer(mapper.readTree("\"cohesion\""))
                                 .build(),
                         TaskBlockRequest.builder()
                                 .type(ContentBlockType.QUESTION)
-                                .content("Place in correct order: 1 - Get up in the morning, 2 - Have fun")
-                                .answer(mapper.readTree("[1, 2]"))
+                                .content("Place in correct order: 1 - Go about your business, 2 - Discuss everything with your team")
+                                .answer(mapper.readTree("[2, 1]"))
                                 .build()
                         )
                 ).build();
@@ -184,40 +187,40 @@ public class TestDataCreator implements CommandLineRunner {
         log.info("Task {} created", task1);
 
         TaskRequest taskRequest2 = TaskRequest.builder()
-                .name("Planning")
-                .description("Assign responsibilities")
+                .name("Task scheduling")
+                .description("In this task you have to learn how to distribute responsibilities between the participants")
                 .stageId(stage2.getId())
                 .index(0)
                 .blocks(List.of(
-                                TaskBlockRequest.builder()
-                                        .type(ContentBlockType.QUESTION)
-                                        .content("Will you work in a team?")
-                                        .answer(mapper.readTree("\"yes\""))
-                                        .build()
+                        TaskBlockRequest.builder()
+                                .type(ContentBlockType.TEXT)
+                                .content("There are a lot of tools to plan your work - " +
+                                        "Trello, Jira, etc. You can choose any tool")
+                                .build(),
+                        TaskBlockRequest.builder()
+                                .type(ContentBlockType.QUESTION)
+                                .content("What is the most popular task tracker called?")
+                                .answer(mapper.readTree("\"jira\""))
+                                .build()
                         )
                 ).build();
         Task task2 = taskService.saveTask(taskRequest2);
         log.info("Task {} created", task2);
 
         TaskRequest taskRequest3 = TaskRequest.builder()
-                .name("Task 3")
-                .description("Third task")
+                .name("What is MVP?")
+                .description("In this task we have to find out what an MVP is and why we need it")
                 .stageId(stage3.getId())
                 .index(0)
                 .blocks(List.of(
                                 TaskBlockRequest.builder()
                                         .type(ContentBlockType.TEXT)
-                                        .content("Block 1")
+                                        .content("A minimum viable product, or MVP, is a product with enough features to attract early-adopter customers")
                                         .build(),
                                 TaskBlockRequest.builder()
                                         .type(ContentBlockType.QUESTION)
-                                        .content("Block 2")
-                                        .answer(mapper.readTree("\"2\""))
-                                        .build(),
-                                TaskBlockRequest.builder()
-                                        .type(ContentBlockType.QUESTION)
-                                        .content("Place in correct order: 1 - Get up in the morning, 2 - Do nothing")
-                                        .answer(mapper.readTree("[1, 2]"))
+                                        .content("Can MVP attract first customers?")
+                                        .answer(mapper.readTree("\"yes\""))
                                         .build()
                         )
                 ).build();
@@ -225,31 +228,35 @@ public class TestDataCreator implements CommandLineRunner {
         log.info("Task {} created", task3);
 
         TaskRequest taskRequest4 = TaskRequest.builder()
-                .name("Have fun!")
-                .description("Do nothing. It's time to make a break")
+                .name("What is marketing?")
+                .description("In this task we will learn what marketing is and how to use it for our purposes")
                 .stageId(stage4.getId())
                 .index(0)
                 .blocks(List.of(
-                                TaskBlockRequest.builder()
-                                        .type(ContentBlockType.QUESTION)
-                                        .content("Do you have fun?")
-                                        .answer(mapper.readTree("\"yes\""))
-                                        .build()
+                        TaskBlockRequest.builder()
+                                .type(ContentBlockType.TEXT)
+                                .content("Marketing is the action or business of promoting and selling products or services, including market research and advertising.")
+                                .build(),
+                        TaskBlockRequest.builder()
+                                .type(ContentBlockType.QUESTION)
+                                .content("Can we increase our profit using marketing?")
+                                .answer(mapper.readTree("\"yes\""))
+                                .build()
                         )
                 ).build();
         Task task4 = taskService.saveTask(taskRequest4);
         log.info("Task {} created", task4);
 
         TaskRequest taskRequest5 = TaskRequest.builder()
-                .name("Final task")
-                .description("Just another task")
+                .name("IPO")
+                .description("In this task we have to find out what an IPO is")
                 .stageId(stage5.getId())
                 .index(0)
                 .blocks(List.of(
                                 TaskBlockRequest.builder()
                                         .type(ContentBlockType.QUESTION)
-                                        .content("Are you ready?")
-                                        .answer(mapper.readTree("\"yes\""))
+                                        .content("Is an MVP suitable for entering the IPO")
+                                        .answer(mapper.readTree("\"no\""))
                                         .build()
                         )
                 ).build();
@@ -258,20 +265,16 @@ public class TestDataCreator implements CommandLineRunner {
 
         CheckpointRequest checkpointRequest1 = CheckpointRequest.builder()
                 .stageId(stage1.getId())
-                .name("Very important checkpoints")
-                .description("Not very important actually")
+                .name("Team building")
+                .description("Submit your discussion results")
                 .blocks(List.of(
                         CheckpointBlock.builder()
                                 .type(ContentBlockType.TEXT)
-                                .content("Here you can find the most important task in this stage. Keep calm and answer.")
+                                .content("You should upload result of your team building session")
                                 .build(),
                         CheckpointBlock.builder()
                                 .type(ContentBlockType.QUESTION)
-                                .content("Da?")
-                                .build(),
-                        CheckpointBlock.builder()
-                                .type(ContentBlockType.QUESTION)
-                                .content("Net?")
+                                .content("Write your answer here")
                                 .build()
                 )).build();
         Checkpoint checkpoint1 = checkpointService.createCheckpoint(checkpointRequest1);
@@ -279,20 +282,16 @@ public class TestDataCreator implements CommandLineRunner {
 
         CheckpointRequest checkpointRequest2 = CheckpointRequest.builder()
                 .stageId(stage2.getId())
-                .name("Very-very important checkpoints")
-                .description("This checkpoint is actually important")
+                .name("Task scheduling")
+                .description("Provide results of your task scheduling")
                 .blocks(List.of(
                         CheckpointBlock.builder()
                                 .type(ContentBlockType.TEXT)
-                                .content("How?")
+                                .content("You need to upload link to your task tracker like Jira or Trello")
                                 .build(),
                         CheckpointBlock.builder()
                                 .type(ContentBlockType.QUESTION)
-                                .content("Da?")
-                                .build(),
-                        CheckpointBlock.builder()
-                                .type(ContentBlockType.QUESTION)
-                                .content("Net?")
+                                .content("Upload link here")
                                 .build()
                 )).build();
         Checkpoint checkpoint2 = checkpointService.createCheckpoint(checkpointRequest2);
@@ -306,6 +305,10 @@ public class TestDataCreator implements CommandLineRunner {
                         CheckpointBlock.builder()
                                 .type(ContentBlockType.TEXT)
                                 .content("Describe your ideas")
+                                .build(),
+                        CheckpointBlock.builder()
+                                .type(ContentBlockType.QUESTION)
+                                .content("Upload your ideas here")
                                 .build()
                 )).build();
         Checkpoint checkpoint3 = checkpointService.createCheckpoint(checkpointRequest3);
@@ -319,6 +322,10 @@ public class TestDataCreator implements CommandLineRunner {
                         CheckpointBlock.builder()
                                 .type(ContentBlockType.TEXT)
                                 .content("Describe your ideas")
+                                .build(),
+                        CheckpointBlock.builder()
+                                .type(ContentBlockType.QUESTION)
+                                .content("Upload your ideas here")
                                 .build()
                 )).build();
         Checkpoint checkpoint4 = checkpointService.createCheckpoint(checkpointRequest4);
@@ -332,6 +339,10 @@ public class TestDataCreator implements CommandLineRunner {
                         CheckpointBlock.builder()
                                 .type(ContentBlockType.TEXT)
                                 .content("Provide your strategy")
+                                .build(),
+                        CheckpointBlock.builder()
+                                .type(ContentBlockType.QUESTION)
+                                .content("Upload link to the document here")
                                 .build()
                 )).build();
         Checkpoint checkpoint5 = checkpointService.createCheckpoint(checkpointRequest5);
