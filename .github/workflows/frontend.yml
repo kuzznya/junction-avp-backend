@@ -1,0 +1,25 @@
+name: Build client
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - front-admin/**
+      - .github/frontend.yml
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build container
+        run: >
+          docker build -t registry.gitlab.com/kuzznya/junction-avp-frontend:latest .
+        working-directory: client
+      - name: Login with docker
+        run: >
+          echo ${{ secrets.GITLAB_TOKEN }} | docker login --username kuzznya
+          --password-stdin registry.gitlab.com/kuzznya
+      - name: Publish container
+        run: docker push registry.gitlab.com/kuzznya/junction-avp-frontend:latest
