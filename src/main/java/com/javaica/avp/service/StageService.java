@@ -52,6 +52,10 @@ public class StageService {
         return mapStageEntityToModel(stageRepository.save(mapStageModelToEntity(stage)));
     }
 
+    public void deleteStage(long stageId) {
+        stageRepository.deleteById(stageId);
+    }
+
     public List<Stage> getStagesByCourse(long courseId, long teamId) {
         return stageRepository.findAllByCourseIdOrderByIndex(courseId)
                 .stream()

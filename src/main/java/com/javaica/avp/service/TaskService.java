@@ -71,6 +71,10 @@ public class TaskService {
         return mapTaskEntityToModel(taskEntity);
     }
 
+    public void deleteTask(long taskId) {
+        taskRepository.deleteById(taskId);
+    }
+
     private Task mapTaskEntityToModel(TaskEntity taskEntity) {
         return Task.builder()
                 .id(taskEntity.getId())

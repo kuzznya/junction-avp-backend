@@ -22,6 +22,10 @@ public class GroupService {
         return entityToModel(repository.save(entity));
     }
 
+    public void deleteGroup(long groupId) {
+        repository.deleteById(groupId);
+    }
+
     public List<Group> getAllGroups(long courseId) {
         return repository.findAllByCourseId(courseId).stream()
                 .map(this::entityToModel)

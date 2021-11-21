@@ -46,4 +46,16 @@ public class AdminGroupController {
     public List<Group> getAllGroups(@RequestParam("course_id") long courseId) {
         return service.getAllGroups(courseId);
     }
+
+    @DeleteMapping("/{groupId}")
+    @Operation(
+            summary = "Get all groups",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content())
+            })
+    public void deleteGroup(@PathVariable Long groupId) {
+        service.deleteGroup(groupId);
+    }
 }

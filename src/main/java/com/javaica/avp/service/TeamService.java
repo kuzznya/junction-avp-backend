@@ -40,6 +40,10 @@ public class TeamService {
         return entityToModel(savedEntity);
     }
 
+    public void deleteTeam(long teamId) {
+        teamRepository.deleteById(teamId);
+    }
+
     public Optional<Team> getTeam(long id) {
         return teamRepository.findById(id).map(this::entityToModel);
     }

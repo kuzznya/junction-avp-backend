@@ -42,6 +42,10 @@ public class CourseService {
         return entityToModel(repository.save(entity));
     }
 
+    public void deleteCourse(long courseId) {
+        repository.deleteById(courseId);
+    }
+
     public List<Course> getAllCourses() {
         return StreamSupport.stream(repository.findAll().spliterator(), false)
                 .map(this::entityToModel)

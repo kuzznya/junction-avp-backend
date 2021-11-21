@@ -88,4 +88,16 @@ public class AdminTeamController {
     public List<GradedTeamProjection> getLeaderboard(@PathVariable Long teamId) {
         return service.getLeaderboard(teamId);
     }
+
+    @DeleteMapping("/{teamId}")
+    @Operation(
+            summary = "Delete team",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content())
+            })
+    public void deleteTeam(@PathVariable Long teamId) {
+        service.deleteTeam(teamId);
+    }
 }

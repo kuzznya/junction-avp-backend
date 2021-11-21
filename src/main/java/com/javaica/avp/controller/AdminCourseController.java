@@ -34,6 +34,18 @@ public class AdminCourseController {
         return service.createCourse(course);
     }
 
+    @DeleteMapping("/{courseId}")
+    @Operation(
+            summary = "Delete course",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content())
+            })
+    public void deleteCourse(@PathVariable Long courseId) {
+        service.deleteCourse(courseId);
+    }
+
     @GetMapping
     @Operation(
             summary = "Get all courses",
