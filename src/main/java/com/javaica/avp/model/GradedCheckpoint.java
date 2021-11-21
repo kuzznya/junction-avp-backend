@@ -10,7 +10,6 @@ import java.util.List;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GradedCheckpoint extends Checkpoint {
 
     CheckpointSubmissionStatus status;

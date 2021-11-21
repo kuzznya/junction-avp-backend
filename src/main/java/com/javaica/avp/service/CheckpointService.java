@@ -75,7 +75,7 @@ public class CheckpointService {
                 .blocks(getBlocksForCheckpoint(entity.getId()))
                 .status(Optional.ofNullable(checkpointProjection)
                         .map(GradedCheckpointProjection::getStatus)
-                        .orElse(null))
+                        .orElse(CheckpointSubmissionStatus.NEW))
                 .points(Optional.ofNullable(checkpointProjection)
                         .map(GradedCheckpointProjection::getPoints)
                         .orElse(null))
