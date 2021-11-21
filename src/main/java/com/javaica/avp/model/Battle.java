@@ -8,6 +8,7 @@ import lombok.Value;
 @AllArgsConstructor
 @Builder
 public class Battle {
+    Long id;
     BattleStatus status;
     TeamHeader initiator;
     TeamHeader defender;
