@@ -53,7 +53,7 @@ public class StageService {
     }
 
     public List<Stage> getStagesByCourse(long courseId, long teamId) {
-        return stageRepository.findAllByCourseId(courseId)
+        return stageRepository.findAllByCourseIdOrderByIndex(courseId)
                 .stream()
                 .map(stage -> mapStageEntityToModelForUser(stage, teamId))
                 .collect(Collectors.toList());
@@ -89,7 +89,7 @@ public class StageService {
                 .name(stage.getName())
                 .description(stage.getDescription())
                 .index(stageRepository
-                        .findAllByCourseId(stage.getCourseId())
+                        .findAllByCourseIdOrderByIndex(stage.getCourseId())
                         .stream().mapToInt(StageEntity::getIndex)
                         .max()
                         .orElse(-1) + 1)
