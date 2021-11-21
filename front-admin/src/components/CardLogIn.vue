@@ -33,8 +33,21 @@ export default {
         {username: this.username, password: this.password},
         {headers: {'Content-Type': 'application/json'}})
         .then(response => {
-            window.console.log(response.status);
-            this.$store.commit('changeUsername', this.username);
+            this.$store.commit('changeUsername', [this.username, response.data.token]);
+            window.console.log(this.$store.state);
+            this.getCourses();
+            localStorage.setItem('token', response.data.token);
+          }
+        )
+        .catch(err =>  {
+          window.console.log(err);
+        })
+    },
+    async getCourses() {
+      await axios.get('http://home.kuzznya.space/api/v1/admin/courses',
+        {headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${this.$store.state.token}`}})
+        .then(response => {
+          this.$store.commit('addCourses', response.data);
           }
         )
         .catch(err =>  {

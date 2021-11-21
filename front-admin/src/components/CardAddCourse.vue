@@ -7,8 +7,8 @@
       </div>
     </div>
     <div class="card__content">
-      <input class="card__input" placeholder="name">
-      <input class="card__input" placeholder="description">
+      <input class="card__input" placeholder="name" v-model="name">
+      <input class="card__input" placeholder="description" v-model="description">
     </div>
     <div v-show="this.$store.state.data.length === 3" class="card__task">
       <div class="card__task-row">
@@ -44,18 +44,21 @@
       </div>
     </div>
     <div class="card__footer">
-      <button class="card__button">Add</button>
+      <button class="card__button" @click="addEntity">Add</button>
     </div>
   </div>
 </template>
 
 <script>
 import {PATHS} from "../constants";
+import axios from "axios";
 
 export default {
   name: "CardAddCourse",
   data() {
     return {
+      name: '',
+      description: '',
       taskType: 'Task',
       paths: PATHS,
       block: {
@@ -75,7 +78,49 @@ export default {
         this.blocks.push({text: this.block.text, type: this.block.type});
       }
       this.block = { text: '', answer: '', type: 'question'}
-    }
+    },
+    addEntity(){
+      switch (this.$store.state.data.length){
+        case 1:
+          this.addCourse({
+            id: '',
+            name: this.name,
+            description: this.description
+          });
+          break;
+        case 2:
+          this.addStage({
+            courseId: this.$store.state.id,
+            name: this.name,
+            description: this.description
+          });
+          break;
+      }
+    },
+    async addCourse(course) {
+      await axios.post(`http://home.kuzznya.space/api/v1/admin/courses`,
+        course,
+        {headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${this.$store.state.token}`}})
+        .then(() => {
+          window.console.log('success');
+          this.$store.state.data[0].push(course);
+          this.$emit('closeModal');
+        })
+        .catch(err =>  {
+          window.console.log(err);
+        })
+    },
+    async addStage(stage) {
+      await axios.post(`http://home.kuzznya.space/api/v1/admin/stages`,
+        stage,
+        {headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${this.$store.state.token}`}})
+        .then(() => {
+          this.getStages(stage.courseId);
+        })
+        .catch(err =>  {
+          window.console.log(err);
+        })
+    },
   }
 }
 </script>

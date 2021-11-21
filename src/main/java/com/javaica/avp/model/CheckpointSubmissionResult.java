@@ -1,5 +1,6 @@
 package com.javaica.avp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,8 @@ import java.util.Map;
 public class CheckpointSubmissionResult {
     Long id;
     Long teamId;
+    @JsonIgnore
+    Long checkpointId;
     Map<Long, JsonNode> content;
     CheckpointSubmissionStatus status;
     String review;

@@ -12,16 +12,16 @@
     </div>
     <div v-show="this.$store.state.data.length !== 3" class="card__content">
       <div class="card__list-titles">
-        <div class="card__list-item-chunk card__list-item-chunk_title" v-for="item in Object.keys(this.$store.state.data[this.$store.state.data.length - 1][0])" v-bind:key="item.id">
+        <div class="card__list-item-chunk card__list-item-chunk_title" v-for="item in Object.keys(this.$store.state.data[this.$store.state.data.length - 1][0] || {})" v-bind:key="item.id">
           {{ item }}
         </div>
       </div>
-      <div class="card__list-item" v-for="item in this.$store.state.data[this.$store.state.data.length - 1]" v-bind:key="item.id" @click="addEntities">
+      <div class="card__list-item" v-for="item in this.$store.state.data[this.$store.state.data.length - 1]" v-bind:key="item.id" @click="addEntities(item.id)">
         <div class="card__list-item-chunk" v-for="key in Object.keys(item)" v-bind:key="key">{{item[key]}}</div>
       </div>
     </div>
       <div v-show="this.$store.state.data.length === 3" class="tasks">
-        <div class="tasks__item" v-for="item in this.$store.state.data[this.$store.state.data.length - 1]" v-bind:key="item.id">
+        <div class="tasks__item" v-for="item in this.$store.state.data[this.$store.state.data.length - 1]" v-bind:key="item.id" :class="{'tasks__item_checkpoint': item.isCheckpoint}">
           <div class="tasks__item-name">
             {{item.name}}
           </div>
@@ -43,65 +43,60 @@
 
 <script>
 import {CARD_NAMES, PATHS} from "../constants";
+import axios from "axios";
 
 export default {
   name: "CardList",
   methods: {
-    addEntities(){
+    addEntities(id){
       switch (this.$store.state.data.length){
         case 1:
-          this.$store.commit('addStages', [
-            {
-              id: 0,
-              name: 'string',
-              description: 'string',
-              status: 'NEW'
-            }
-          ])
+          this.getStages(id);
           break;
         case 2:
-          this.$store.commit('addTasks', {
-            "id": 0,
-            "courseId": 0,
-            "name": "string",
-            "description": "string",
-            "tasks": [
-              {
-                "id": 0,
-                "stageId": 0,
-                "name": "string",
-                "description": "string",
-                "index": 0,
-                "blocks": [
-                  {
-                    "id": 0,
-                    "content": "string",
-                    "type": "TEXT",
-                    "index": 0
-                  }
-                ],
-                "points": 0
-              }
-            ],
-            "checkpoint": {
-              "id": 0,
-              "stageId": 0,
-              "name": "checkpoint",
-              "description": "string",
-              "blocks": [
-                {
-                  "id": 0,
-                  "content": "string",
-                  "type": "TEXT",
-                  "index": 0
-                }
-              ],
-              "status": "NEW",
-              "points": 0
-            }
-          })
+          this.getTasks(id);
+          console.log(this.$store.state.checkpoint.id);
           break;
       }
+    },
+    async getStages(id) {
+      await axios.get(`http://home.kuzznya.space/api/v1/courses/${id}/stages`,
+        {headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${this.$store.state.token}`}})
+        .then(response => {
+          this.$store.commit('addId', id);
+            this.$store.commit('addStages', response.data);
+          }
+        )
+        .then(() => {
+          const tasks = this.$store.state.data[this.$store.state.data.length - 1];
+          this.getReviews(tasks[tasks.length - 1].id);
+        })
+        .catch(err =>  {
+          window.console.log(err);
+        })
+    },
+    async getTasks(id) {
+      await axios.get(`http://home.kuzznya.space/api/v1/stages/${id}`,
+        {headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${this.$store.state.token}`}})
+        .then(response => {
+            this.$store.commit('addTasks', response.data);
+          }
+        )
+        .catch(err =>  {
+          window.console.log(err);
+        })
+    },
+    async getReviews(id){
+      await axios.get(`http://home.kuzznya.space/api/v1/admin/checkpoints/${id}/submissions`,
+        {headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${this.$store.state.token}`}})
+        .then(response => {
+            this.$store.commit('addReviews', response.data);
+            console.log(response)
+          }
+        )
+        .catch(err =>  {
+          window.console.log(err);
+        })
     }
   },
   data() {
