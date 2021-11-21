@@ -6,13 +6,12 @@
 </template>
 
 <script>
-import CardLogIn from "./components/CardLogIn";
 import PageLogIn from "./components/PageLogIn";
 import PageDashboard from "./components/PageDashboard";
 
 export default {
   name: 'app',
-  components: {PageDashboard, PageLogIn, CardLogIn},
+  components: {PageDashboard, PageLogIn},
   data () {
     return {
     }
