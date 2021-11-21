@@ -36,6 +36,20 @@ public class AdminTeamController {
         return service.createTeam(team);
     }
 
+    @PostMapping("/{teamId}/users")
+    @Operation(
+            summary = "Add user to team",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+                    @ApiResponse(responseCode = "400", description = "Bad request", content = @Content())
+            })
+    public Team addUserToTeam(@PathVariable Long teamId,
+                              @RequestParam String username) {
+        return service.addUserToTeam(teamId, username);
+    }
+
     @GetMapping
     @Operation(
             summary = "Get all teams",

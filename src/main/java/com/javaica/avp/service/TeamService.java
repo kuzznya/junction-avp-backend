@@ -44,6 +44,17 @@ public class TeamService {
         return teamRepository.findById(id).map(this::entityToModel);
     }
 
+    @Transactional
+    public Team addUserToTeam(Long teamId, String username) {
+        getTeam(teamId).orElseThrow(NotFoundException::new);
+        userRepository.save(
+                userRepository.findByUsername(username)
+                        .orElseThrow(NotFoundException::new)
+                        .withTeamId(teamId)
+        );
+        return getTeam(teamId).orElseThrow(NotFoundException::new);
+    }
+
     public Optional<GradedTeamProjection> getTeamOfUser(AppUser user) {
         return Optional.ofNullable(user.getTeamId())
                 .flatMap(teamRepository::findByIdWithPoints);
