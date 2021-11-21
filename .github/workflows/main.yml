@@ -35,7 +35,5 @@ jobs:
       - name: Authenticate to Docker Registry
         run: >
           echo ${{ secrets.GITLAB_TOKEN }} | docker login --username kuzznya --password-stdin registry.gitlab.com/kuzznya
-#          echo ${{ secrets.GITHUB_TOKEN }} | docker login --username kuzznya
-#          --password-stdin ghcr.io/kuzznya
       - name: Deploy stack
         run: docker stack deploy --compose-file docker-compose.yml --prune --with-registry-auth junction
