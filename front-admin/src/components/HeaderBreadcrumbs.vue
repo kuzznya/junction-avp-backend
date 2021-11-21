@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "HeaderBreadcrumbs",
   data(){
@@ -17,11 +19,23 @@ export default {
   },
   methods: {
     moveToMain() {
-      this.$store.commit('moveToMain')
+      this.$store.commit('moveToMain');
+      this.getCourses();
     },
     moveToStages() {
       this.$store.commit('moveToStages')
     },
+    async getCourses() {
+      await axios.get('http://home.kuzznya.space/api/v1/admin/courses',
+        {headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${this.$store.state.token}`}})
+        .then(response => {
+            this.$store.commit('addCourses', response.data);
+          }
+        )
+        .catch(err =>  {
+          window.console.log(err);
+        })
+    }
   }
 }
 </script>

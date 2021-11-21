@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%; width: 100%">
-    <PageLogIn v-show="false"></PageLogIn>
-    <PageDashboard></PageDashboard>
+    <PageLogIn v-show="this.$store.state.username === ''" @logIn = "page++"></PageLogIn>
+    <PageDashboard v-show="this.$store.state.username !== ''" @logOut = "page--"></PageDashboard>
   </div>
 </template>
 
@@ -14,6 +14,7 @@ export default {
   components: {PageDashboard, PageLogIn},
   data () {
     return {
+      page: 0
     }
   },
   methods: {

@@ -5,30 +5,18 @@
           Review
         </div>
       </div>
+      <div v-show="this.$store.state.data[this.$store.state.data.length - 1].length">There is no submissions</div>
       <div class="tasks">
-        <div class="review">
-          <div class="review__block">
-            <div class="review__name">Tam Alpha</div>
-            <div class="review__time">KokokokoF</div>
-          </div>
-          <div class="review__description">
-            Cococococococ roggtromr rdigrok rkoefkeo rko4kgopdb ewfp90ifkefpke0rk eriojef0porgjg0je0fje09 we0f9pk0p9fjwer0p9f0 re0i9fkerp0fkre0pf wef-i90wfi09wf09er0p9igir09erg fwe0peferp0kgrep0k
-          </div>
-          <div class="review__description">
-            Cococococococ roggtromr rdigrok rkoefkeo rko4kgopdb ewfp90ifkefpke0rk eriojef0porgjg0je0fje09 we0f9pk0p9fjwer0p9f0 re0i9fkerp0fkre0pf wef-i90wfi09wf09er0p9igir09erg fwe0peferp0kgrep0k
-          </div>
-          <div class="review__description">
-            Cococococococ roggtromr rdigrok rkoefkeo rko4kgopdb ewfp90ifkefpke0rk eriojef0porgjg0je0fje09 we0f9pk0p9fjwer0p9f0 re0i9fkerp0fkre0pf wef-i90wfi09wf09er0p9igir09erg fwe0peferp0kgrep0k
-          </div>
+        <div class="review" v-for="review in this.$store.state.reviews" v-bind:key="review">
+          <div class="review__time">{{ review.submissionTimestamp }}</div>
+<!--          <div class="review__description" v-for="answer in review.content" v-bind:key="answer">-->
+<!--            {{answer}}-->
+<!--          </div>-->
           <div class="review__row">
             <input class="card__input review__input" placeholder="your coomment">
             <button class="card__button review__button">Accept</button>
             <button class="card__button review__button review__button_black">Decline</button>
           </div>
-        </div>
-        <div class="review">
-        </div>
-        <div class="review">
         </div>
       </div>
     </div>
@@ -36,7 +24,12 @@
 
 <script>
 export default {
-  name: "CardReview"
+  name: "CardReview",
+  data(){
+    return{
+
+    }
+  }
 }
 </script>
 
