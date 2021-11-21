@@ -235,10 +235,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="initiator_id" type="int">
-                <constraints foreignKeyName="fk_battle_initiator" references="team(id)" nullable="false"/>
+                <constraints foreignKeyName="fk_battle_initiator" references="team(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="defender_id" type="int">
-                <constraints foreignKeyName="fk_battle_defender" references="team(id)" nullable="false"/>
+                <constraints foreignKeyName="fk_battle_defender" references="team(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="checkpoint_id" type="int">
                 <constraints foreignKeyName="checkpoint" nullable="false"/>
@@ -255,10 +255,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="requester_id" type="int">
-                <constraints foreignKeyName="fk_collab_requester" references="team(id)" nullable="false"/>
+                <constraints foreignKeyName="fk_collab_requester" references="team(id)" nullable="false" deleteCascade="true"/>
             </column>
             <column name="helper_id" type="int">
-                <constraints foreignKeyName="fk_collab_helper" references="team(id)" nullable="false"/>
+                <constraints foreignKeyName="fk_collab_helper" references="team(id)" nullable="false" deleteCascade="true"/>
             </column>
         </createTable>
     </changeSet>
