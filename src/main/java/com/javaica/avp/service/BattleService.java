@@ -106,10 +106,7 @@ public class BattleService {
             throw new AccessDeniedException(
                     "Cannot set " + status.toString().toLowerCase() +
                             " status, battle is already " + battle.getStatus().toString().toLowerCase());
-        if (!teamService
-                .getTeamOfUser(user)
-                .orElseThrow(() -> new AccessDeniedException("Team for user " + user.getUsername() + " not found"))
-                .getId().equals(battle.getDefenderId())) {
+        if (!user.getTeamId().equals(battle.getDefenderId())) {
             throw new AccessDeniedException("Cannot accept battle");
         }
         return mapBattleEntityToModel(
