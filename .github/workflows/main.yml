@@ -25,5 +25,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Prepare .kube directory
+        run: mkdir ~/.kube || echo "Cannot create ~/.kube directory, skipping"
+      - name: Prepare kubeconfig
+        run: echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
       - name: Deploy to Kubernetes
         run: kubectl rollout restart deployment backend --namespace junction
