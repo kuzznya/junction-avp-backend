@@ -16,24 +16,14 @@ jobs:
       - name: Build image
         run: >
           ./gradlew jib
-          -Djib.to.image='registry.gitlab.com/kuzznya/junction-avp-backend'
+          -Djib.to.image='ghcr.io/kuzznya/junction-avp-backend'
           -Djib.to.auth.username=kuzznya
-          -Djib.to.auth.password='${{ secrets.GITLAB_TOKEN }}'
+          -Djib.to.auth.password='${{ secrets.GITHUB_TOKEN }}'
           -Djib.console=plain
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup remote Docker connection
-        uses: pcjun97/action-setup-docker-host-ssh@v1
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: 22
-          user: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
-      - name: Authenticate to Docker Registry
-        run: >
-          echo ${{ secrets.GITLAB_TOKEN }} | docker login --username kuzznya --password-stdin registry.gitlab.com/kuzznya
-      - name: Deploy stack
-        run: docker stack deploy --compose-file docker-compose.yml --prune --with-registry-auth junction
+      - name: Deploy to Kubernetes
+        run: kubectl rollout restart deployment backend --namespace junction

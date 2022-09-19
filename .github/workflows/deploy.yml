@@ -7,8 +7,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Authenticate to Docker Registry
-        run: >
-          echo ${{ secrets.GITLAB_TOKEN }} | docker login --username kuzznya --password-stdin registry.gitlab.com/kuzznya
-      - name: Deploy stack
-        run: docker stack deploy --compose-file docker-compose.yml --prune --with-registry-auth junction
+      - name: Prepare .kube directory
+        run: mkdir ~/.kube || echo "Cannot create ~/.kube directory, skipping"
+      - name: Prepare kubeconfig
+        run: echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+      - name: Create namespace
+        run: kubectl create namespace junction
+      - name: Create secrets
+        run: ./create-secrets.sh
+        working-directory: deploy
+      - name: Deploy project
+        run: kubectl apply -f deploy/configs
