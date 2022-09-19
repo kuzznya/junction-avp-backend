@@ -11,10 +11,12 @@ jobs:
         run: mkdir ~/.kube || echo "Cannot create ~/.kube directory, skipping"
       - name: Prepare kubeconfig
         run: echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+      - name: Prepare .env file
+        run : echo "${{ secrets.ENV }}" > deploy/.env
       - name: Create namespace
         run: kubectl create namespace junction
       - name: Create secrets
         run: ./create-secrets.sh
         working-directory: deploy
       - name: Deploy project
-        run: kubectl apply -f deploy/configs
+        run: kubectl --namespace junction apply -f deploy/configs

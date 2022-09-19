@@ -15,11 +15,11 @@ spec:
     - host: junction.kuzznya.space
       http:
         paths:
-          - path: /
+          - path: /api/v1
             pathType: Prefix
             backend:
               service:
-                name: frontend
+                name: backend
                 port:
                   number: 80
 
