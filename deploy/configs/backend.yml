@@ -15,7 +15,7 @@ spec:
     - host: junction.kuzznya.space
       http:
         paths:
-          - path: /api/v1
+          - path: /
             pathType: Prefix
             backend:
               service:
@@ -93,7 +93,7 @@ spec:
             httpGet:
               port: 8080
               path: /actuator/health
-            initialDelaySeconds: 60
+            initialDelaySeconds: 20
             terminationGracePeriodSeconds: 10
             timeoutSeconds: 2
             periodSeconds: 10
@@ -101,7 +101,7 @@ spec:
             httpGet:
               port: 8080
               path: /actuator/health
-            initialDelaySeconds: 70
+            initialDelaySeconds: 25
             timeoutSeconds: 2
             periodSeconds: 10
 
