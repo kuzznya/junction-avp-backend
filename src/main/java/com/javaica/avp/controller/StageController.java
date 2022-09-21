@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/stages")
+@RequestMapping("/api/v1/stages")
 @AllArgsConstructor
 public class StageController {
 

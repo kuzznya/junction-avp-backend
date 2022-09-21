@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/collabs")
+@RequestMapping("/api/v1/collabs")
 @AllArgsConstructor
 public class CollabController {
 

@@ -17,12 +17,13 @@ import java.util.Map;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/api/v1/checkpoints")
 public class CheckpointController {
 
     private final CheckpointService checkpointService;
     private final SubmissionService submissionService;
 
-    @GetMapping("/checkpoints/{checkpointId}")
+    @GetMapping("/{checkpointId}")
     @Operation(
             summary = "Get checkpoint",
             security = @SecurityRequirement(name = "bearerAuth"),
@@ -31,12 +32,14 @@ public class CheckpointController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
-    public GradedCheckpoint getStageCheckpoint(@PathVariable Long checkpointId,
-                                               @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
+    public GradedCheckpoint getStageCheckpoint(
+            @PathVariable Long checkpointId,
+            @Parameter(hidden = true) @AuthenticationPrincipal AppUser user
+    ) {
         return checkpointService.getCheckpointById(checkpointId, user);
     }
 
-    @PostMapping("/checkpoints/{checkpointId}/submissions")
+    @PostMapping("/{checkpointId}/submissions")
     @Operation(
             summary = "Submit checkpoint solution",
             security = @SecurityRequirement(name = "bearerAuth"),
@@ -45,9 +48,11 @@ public class CheckpointController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
-    public CheckpointSubmissionResult submitCheckpointSolution(@PathVariable Long checkpointId,
-                                                               @RequestBody Map<String, JsonNode> submission,
-                                                               @Parameter(hidden = true) @AuthenticationPrincipal AppUser user) {
+    public CheckpointSubmissionResult submitCheckpointSolution(
+            @PathVariable Long checkpointId,
+            @RequestBody Map<String, JsonNode> submission,
+            @Parameter(hidden = true) @AuthenticationPrincipal AppUser user
+    ) {
         return submissionService.submitCheckpoint(checkpointId, submission, user);
     }
 }

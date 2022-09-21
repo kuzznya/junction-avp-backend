@@ -11,7 +11,7 @@ spring:
 data.jdbc.json-support: byte_array
 
 security:
-  secret: 12345678
+  secret: mysuperstrongsecretwithlength32!
   admin:
     username: admin
     password: password

@@ -8,8 +8,6 @@ server:
     include-exception: false
     include-stacktrace: never
     include-binding-errors: always
-  servlet:
-    context-path: /api/v1
 
 spring:
   application:
@@ -30,3 +28,17 @@ security:
   admin:
     username: ${ADMIN_USERNAME}
     password: ${ADMIN_PASSWORD}
+
+springdoc:
+  api-docs:
+    groups:
+      enabled: true
+  group-configs:
+    - group: v1
+      paths-to-match:
+        - /api/v1/**
+      paths-to-exclude:
+        - /api/v1/admin/**
+    - group: v1-admin
+      paths-to-match:
+        - /api/v1/admin/**

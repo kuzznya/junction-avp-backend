@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/admin/tasks")
+@RequestMapping("/api/v1/admin/tasks")
 @Secured("ROLE_ADMIN")
 @RequiredArgsConstructor
 public class AdminTaskController {

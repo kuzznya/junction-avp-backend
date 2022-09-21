@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/groups")
+@RequestMapping("/api/v1/admin/groups")
 @Secured("ROLE_ADMIN")
 @RequiredArgsConstructor
 public class AdminGroupController {

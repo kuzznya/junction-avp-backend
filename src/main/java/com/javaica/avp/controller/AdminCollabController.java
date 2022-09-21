@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/collabs")
+@RequestMapping("/api/v1/admin/collabs")
 @Secured("ROLE_ADMIN")
 @RequiredArgsConstructor
 public class AdminCollabController {

@@ -16,7 +16,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/teams")
+@RequestMapping("/api/v1/admin/teams")
 @Secured("ROLE_ADMIN")
 @RequiredArgsConstructor
 public class AdminTeamController {

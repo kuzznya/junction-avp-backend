@@ -16,7 +16,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/authentication")
+    @PostMapping("/api/v1/authentication")
     public AuthResponse authenticate(@RequestBody @Valid AuthRequest request) {
         return authService.authenticate(request);
     }

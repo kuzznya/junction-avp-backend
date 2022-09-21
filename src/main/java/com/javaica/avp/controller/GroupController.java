@@ -18,7 +18,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/groups")
+@RequestMapping("/api/v1/groups")
 @RequiredArgsConstructor
 public class GroupController {
 

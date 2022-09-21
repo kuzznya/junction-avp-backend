@@ -1,9 +1,9 @@
 //file:noinspection GradlePackageUpdate
 plugins {
-    id 'org.springframework.boot' version '2.5.6'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '2.7.3'
+    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
     id 'java'
-    id 'com.google.cloud.tools.jib' version '3.1.4'
+    id 'com.google.cloud.tools.jib' version '3.3.0'
 }
 
 group = 'com.javaica.avp'
@@ -20,21 +20,15 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    set('springCloudVersion', "2020.0.4")
-    set('dockerRegistry', 'ghcr.io/kuzznya')
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-}
-
 dependencies {
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.5.12'
-    implementation 'io.swagger:swagger-annotations:1.6.3'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5',
+            // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
+            //'org.bouncycastle:bcprov-jdk15on:1.70',
+            'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
+    implementation 'org.springdoc:springdoc-openapi-security:1.6.11'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'

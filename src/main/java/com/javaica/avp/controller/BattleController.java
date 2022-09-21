@@ -13,7 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/battles")
+@RequestMapping("/api/v1/battles")
 @AllArgsConstructor
 public class BattleController {
 

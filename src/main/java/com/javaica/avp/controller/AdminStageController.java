@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/admin/stages")
+@RequestMapping("/api/v1/admin/stages")
 @Secured("ROLE_ADMIN")
 @RequiredArgsConstructor
 public class AdminStageController {

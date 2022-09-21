@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -16,6 +17,7 @@ import java.time.temporal.ChronoUnit;
 @Validated
 public class SecurityProperties {
     @NotBlank
+    @Size(min = 32)
     private String secret;
     @DurationUnit(ChronoUnit.DAYS)
     Duration tokenTtl;

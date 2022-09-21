@@ -89,3 +89,19 @@ spec:
                 secretKeyRef:
                   name: junction-secrets
                   key: SEC_SECRET
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health
+            initialDelaySeconds: 60
+            terminationGracePeriodSeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health
+            initialDelaySeconds: 70
+            timeoutSeconds: 2
+            periodSeconds: 10
+

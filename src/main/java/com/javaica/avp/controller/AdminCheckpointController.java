@@ -18,7 +18,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/v1/admin")
 @Secured("ROLE_ADMIN")
 @RequiredArgsConstructor
 public class AdminCheckpointController {

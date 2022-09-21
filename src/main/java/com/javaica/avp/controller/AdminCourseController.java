@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/courses")
+@RequestMapping("/api/v1/admin/courses")
 @Secured("ROLE_ADMIN")
 @RequiredArgsConstructor
 public class AdminCourseController {

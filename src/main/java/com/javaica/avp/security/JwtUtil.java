@@ -5,7 +5,7 @@ import com.javaica.avp.model.AuthToken;
 import com.javaica.avp.model.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +20,9 @@ public class JwtUtil {
     private final SecurityProperties securityProperties;
 
     public AuthToken readToken(String token) {
-        Claims claims = Jwts.parser()
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(securityProperties.getSecret().getBytes(StandardCharsets.UTF_8))
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
         long id = Long.parseLong(claims.getSubject());
@@ -45,7 +46,7 @@ public class JwtUtil {
                 )
                 .claim("username", data.getUsername())
                 .claim("role", data.getRole())
-                .signWith(SignatureAlgorithm.HS512, securityProperties.getSecret().getBytes(StandardCharsets.UTF_8))
+                .signWith(Keys.hmacShaKeyFor(securityProperties.getSecret().getBytes(StandardCharsets.UTF_8)))
                 .compact();
     }
 }
