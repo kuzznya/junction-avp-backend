@@ -1,8 +1,7 @@
 package com.javaica.avp.security;
 
 import com.javaica.avp.config.props.SecurityProperties;
-import com.javaica.avp.model.AuthToken;
-import com.javaica.avp.model.UserRole;
+import com.javaica.avp.user.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

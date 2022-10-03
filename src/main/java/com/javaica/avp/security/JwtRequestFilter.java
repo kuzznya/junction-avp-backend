@@ -1,9 +1,8 @@
 package com.javaica.avp.security;
 
 import com.javaica.avp.exception.ForbiddenException;
-import com.javaica.avp.model.AppUser;
-import com.javaica.avp.model.AuthToken;
-import com.javaica.avp.service.UserService;
+import com.javaica.avp.user.AppUser;
+import com.javaica.avp.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;

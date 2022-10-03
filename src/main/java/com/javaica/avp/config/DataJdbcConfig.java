@@ -1,8 +1,8 @@
 package com.javaica.avp.config;
 
 import com.javaica.avp.config.props.DataJdbcProperties;
-import com.javaica.avp.util.JsonNodeToByteArrayConverter;
 import com.javaica.avp.util.ByteArrayToJsonNodeConverter;
+import com.javaica.avp.util.JsonNodeToByteArrayConverter;
 import com.javaica.avp.util.JsonNodeToPgObjectConverter;
 import com.javaica.avp.util.PgObjectToJsonNodeConverter;
 import lombok.RequiredArgsConstructor;
