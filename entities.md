@@ -1,5 +1,11 @@
 ```plantuml
 @startuml
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
 entity User {
     id : long
     username : string
