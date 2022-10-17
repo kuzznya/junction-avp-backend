@@ -383,7 +383,7 @@ public class TestDataCreator implements CommandLineRunner {
 
         log.info("Battle {} created", battle1);
 
-        battleService.acceptBattle(battle1.getId(), users.get(team.getMembers().get(0)));
+        battleService.declineBattle(battle1.getId(), users.get(team.getMembers().get(0)));
 
         Battle battle2 = battleService.initiateBattle(
                 team.getId(),

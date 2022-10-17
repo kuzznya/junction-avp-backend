@@ -69,7 +69,10 @@ public class BattleService {
         GradedTeamProjection userTeam = teamService.getTeamOfUser(user)
                 .orElseThrow(() -> new AccessDeniedException("No team found for user " + user.getUsername()));
         return battleRepository
-                .findByInitiatorIdOrDefenderId(userTeam.getId(), userTeam.getId())
+                .findAllByInitiatorIdOrDefenderId(userTeam.getId(), userTeam.getId()).stream()
+                .filter(battleEntity -> battleEntity.getStatus().equals(BattleStatus.PENDING) ||
+                        battleEntity.getStatus().equals(BattleStatus.ACCEPTED))
+                .findAny()
                 .map(this::mapBattleEntityToModel)
                 .orElseThrow(NotFoundException::new);
     }

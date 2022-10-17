@@ -9,4 +9,8 @@ public interface BattleRepository extends CrudRepository<BattleEntity, Long> {
     List<BattleEntity> findAllByInitiatorIdOrDefenderId(long initiatorId, long defenderId);
 
     Optional<BattleEntity> findByInitiatorIdOrDefenderId(long initiatorId, long defenderId);
+
+    List<BattleEntity> findByInitiatorId(long initiatorId);
+
+    List<BattleEntity> findByDefenderId(long defenderId);
 }
