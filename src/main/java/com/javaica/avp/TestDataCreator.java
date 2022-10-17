@@ -7,6 +7,8 @@ import com.javaica.avp.checkpoint.CheckpointService;
 import com.javaica.avp.checkpoint.model.Checkpoint;
 import com.javaica.avp.checkpoint.model.CheckpointBlock;
 import com.javaica.avp.checkpoint.model.CheckpointRequest;
+import com.javaica.avp.collab.Collab;
+import com.javaica.avp.collab.CollabService;
 import com.javaica.avp.common.ContentBlockType;
 import com.javaica.avp.course.Course;
 import com.javaica.avp.course.CourseRepository;
@@ -48,6 +50,7 @@ public class TestDataCreator implements CommandLineRunner {
     private final TaskService taskService;
     private final CheckpointService checkpointService;
     private final BattleService battleService;
+    private final CollabService collabService;
 
     private final CourseRepository courseRepository;
 
@@ -392,5 +395,16 @@ public class TestDataCreator implements CommandLineRunner {
         );
 
         log.info("Battle {} created", battle2);
+
+        Collab collab1 = collabService.requestCollab(
+            3,
+                users.get("user3")
+        );
+
+        log.info("Collab {} created", collab1);
+
+        collabService.acceptCollab(collab1.getId(), users.get("user4"));
+
+        log.info("Collab {} accepted by user {}", collab1, users.get("user4"));
     }
 }
