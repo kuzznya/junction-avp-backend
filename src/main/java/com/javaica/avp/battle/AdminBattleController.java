@@ -43,7 +43,7 @@ public class AdminBattleController {
                     @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
             })
-    public Battle getTeamBattles(@PathVariable Long teamId) {
+    public List<Battle> getTeamBattles(@PathVariable Long teamId) {
         return battleService.getTeamBattles(teamId);
     }
 }

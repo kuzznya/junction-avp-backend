@@ -58,10 +58,11 @@ public class BattleService {
                 .collect(Collectors.toList());
     }
 
-    public Battle getTeamBattles(long teamId) {
-        return battleRepository.findByInitiatorIdOrDefenderId(teamId, teamId)
+    public List<Battle> getTeamBattles(long teamId) {
+        return battleRepository
+                .findAllByInitiatorIdOrDefenderId(teamId, teamId).stream()
                 .map(this::mapBattleEntityToModel)
-                .orElseThrow(NotFoundException::new);
+                .collect(Collectors.toList());
     }
 
     public Battle getUserBattle(AppUser user) {
@@ -88,6 +89,7 @@ public class BattleService {
     }
 
     public void onSubmissionReview(CheckpointSubmissionResult result) {
+        // FIXME: 17/10/2022 throw exception on multiple results
         Optional<Battle> battleOptional = battleRepository.findByInitiatorIdOrDefenderId(result.getTeamId(), result.getTeamId()).map(this::mapBattleEntityToModel);
         if (battleOptional.isEmpty())
             return;
@@ -123,6 +125,10 @@ public class BattleService {
         if (!courseService.getTeamCourse(opponentTeamId).getId()
                 .equals(courseService.getTeamCourse(userTeam.getId()).getId()))
             throw new BadRequestException("Teams are from different courses");
+        if (isTeamParticipateInBattle(user.getTeamId()))
+            throw new BadRequestException("Team " + userTeam.getId() + " already participate in battle");
+        if (isTeamParticipateInBattle(opponentTeamId))
+            throw new BadRequestException("Team " + opponentTeamId + " already participate in battle");
         return mapBattleEntityToModel(
                 battleRepository.save(
                         BattleEntity.builder()
@@ -202,6 +208,16 @@ public class BattleService {
 
     public BattleProgress getCurrentBattleProgress(AppUser user) {
         return getBattleProgress(getUserBattle(user).getId());
+    }
+
+    private boolean isTeamParticipateInBattle(long teamId) {
+        return battleRepository.findByInitiatorId(teamId).stream()
+                .anyMatch(battleEntity -> battleEntity.getStatus().equals(BattleStatus.PENDING)
+                        || battleEntity.getStatus().equals(BattleStatus.ACCEPTED))
+                ||
+                battleRepository.findByDefenderId(teamId).stream()
+                        .anyMatch(battleEntity -> battleEntity.getStatus().equals(BattleStatus.PENDING)
+                                || battleEntity.getStatus().equals(BattleStatus.ACCEPTED));
     }
 
     private List<StageProgress> getTeamProgress(long teamId, long targetCheckpointId) {
