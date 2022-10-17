@@ -197,7 +197,7 @@ public class TestDataCreator implements CommandLineRunner {
                                         .build(),
                                 TaskBlockRequest.builder()
                                         .type(ContentBlockType.QUESTION)
-                                        .content("Цhat is the most important thing when participating in a team?")
+                                        .content("What is the most important thing when participating in a team?")
                                         .answer(mapper.readTree("\"cohesion\""))
                                         .build(),
                                 TaskBlockRequest.builder()
