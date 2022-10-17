@@ -397,14 +397,14 @@ public class TestDataCreator implements CommandLineRunner {
         log.info("Battle {} created", battle2);
 
         Collab collab1 = collabService.requestCollab(
-            3,
+            1,
                 users.get("user3")
         );
 
         log.info("Collab {} created", collab1);
 
-        collabService.acceptCollab(collab1.getId(), users.get("user4"));
+        collabService.acceptCollab(collab1.getId(), users.get("admin"));
 
-        log.info("Collab {} accepted by user {}", collab1, users.get("user4"));
+        log.info("Collab {} accepted by user {}", collab1, users.get("admin"));
     }
 }
