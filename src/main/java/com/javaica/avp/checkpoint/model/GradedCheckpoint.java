@@ -2,6 +2,7 @@ package com.javaica.avp.checkpoint.model;
 
 import com.javaica.avp.submission.checkpoint.CheckpointSubmissionStatus;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @SuperBuilder
 public class GradedCheckpoint extends Checkpoint {
 

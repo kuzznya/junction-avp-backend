@@ -4,7 +4,6 @@ import com.javaica.avp.course.CourseService;
 import com.javaica.avp.exception.BadRequestException;
 import com.javaica.avp.exception.NotFoundException;
 import com.javaica.avp.security.AccessService;
-import com.javaica.avp.stage.Stage;
 import com.javaica.avp.stage.StageProgress;
 import com.javaica.avp.stage.StageService;
 import com.javaica.avp.submission.SubmissionService;
@@ -13,18 +12,24 @@ import com.javaica.avp.submission.checkpoint.CheckpointSubmissionStatus;
 import com.javaica.avp.team.*;
 import com.javaica.avp.user.AppUser;
 import com.javaica.avp.user.UserRole;
-import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class BattleService {
 
     private final TeamService teamService;
@@ -33,24 +38,9 @@ public class BattleService {
     private final StageService stageService;
     private final SubmissionService submissionService;
 
-    private final TeamRepository teamRepository;
     private final BattleRepository battleRepository;
 
-    public BattleService(TeamService teamService,
-                         CourseService courseService,
-                         AccessService accessService,
-                         @Lazy StageService stageService,
-                         @Lazy SubmissionService submissionService,
-                         TeamRepository teamRepository,
-                         BattleRepository battleRepository) {
-        this.teamService = teamService;
-        this.courseService = courseService;
-        this.accessService = accessService;
-        this.stageService = stageService;
-        this.submissionService = submissionService;
-        this.teamRepository = teamRepository;
-        this.battleRepository = battleRepository;
-    }
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<Battle> getAllBattles() {
         return StreamSupport.stream(battleRepository.findAll().spliterator(), false)
@@ -77,6 +67,24 @@ public class BattleService {
                 .orElseThrow(NotFoundException::new);
     }
 
+    public BattleProgress getBattleProgress(Long battleId, AppUser user) {
+        BattleEntity battleEntity = battleRepository.findById(battleId)
+                .orElseThrow(() -> new NotFoundException("Battle " + battleId + " not found"));
+        BattleProgress.UserTeamRole userTeamRole = user.getTeamId().equals(battleEntity.getInitiatorId()) ?
+                BattleProgress.UserTeamRole.INITIATOR :
+                BattleProgress.UserTeamRole.DEFENDER;
+        return BattleProgress.builder()
+                .battle(mapBattleEntityToModel(battleEntity))
+                .initiatorProgress(getTeamProgress(battleEntity.getInitiatorId(), battleEntity.getCheckpointId()))
+                .defenderProgress(getTeamProgress(battleEntity.getDefenderId(), battleEntity.getCheckpointId()))
+                .userTeamRole(userTeamRole)
+                .build();
+    }
+
+    public BattleProgress getCurrentBattleProgress(AppUser user) {
+        return getBattleProgress(getUserBattle(user).getId(), user);
+    }
+
     public Battle getBattleById(Long battleId, AppUser user) {
         Battle battle = battleRepository.findById(battleId)
                 .map(this::mapBattleEntityToModel)
@@ -91,9 +99,9 @@ public class BattleService {
         return battle;
     }
 
+    @EventListener
     public void onSubmissionReview(CheckpointSubmissionResult result) {
-        // FIXME: 17/10/2022 throw exception on multiple results
-        Optional<Battle> battleOptional = battleRepository.findByInitiatorIdOrDefenderId(result.getTeamId(), result.getTeamId()).map(this::mapBattleEntityToModel);
+        Optional<Battle> battleOptional = battleRepository.findActiveBattleByTeamId(result.getTeamId()).map(this::mapBattleEntityToModel);
         if (battleOptional.isEmpty())
             return;
         Battle battle = battleOptional.get();
@@ -116,6 +124,7 @@ public class BattleService {
         }
     }
 
+    @Transactional
     public Battle initiateBattle(Long opponentTeamId, Long checkpointId, AppUser user) {
         if (!accessService.userHasAccessToCheckpoint(checkpointId, user))
             throw new AccessDeniedException("Cannot access checkpoint " + checkpointId);
@@ -123,15 +132,16 @@ public class BattleService {
                 .orElseThrow(() -> new AccessDeniedException("User does not belong to any team"));
         if (userTeam.getId().equals(opponentTeamId))
             throw new AccessDeniedException("Cannot initiate battle with the same team");
-        if (!teamRepository.existsById(opponentTeamId))
+        if (!teamService.teamExists(opponentTeamId))
             throw new NotFoundException("Team " + opponentTeamId + " not found");
         if (!courseService.getTeamCourse(opponentTeamId).getId()
                 .equals(courseService.getTeamCourse(userTeam.getId()).getId()))
             throw new BadRequestException("Teams are from different courses");
-        if (isTeamParticipateInBattle(user.getTeamId()))
-            throw new BadRequestException("Team " + userTeam.getId() + " already participate in battle");
-        if (isTeamParticipateInBattle(opponentTeamId))
-            throw new BadRequestException("Team " + opponentTeamId + " already participate in battle");
+        if (isTeamParticipatingInBattle(user.getTeamId()))
+            throw new BadRequestException("Team " + userTeam.getId() + " is already participating in battle");
+        if (isTeamParticipatingInBattle(opponentTeamId))
+            throw new BadRequestException("Team " + opponentTeamId + " is already participating in battle");
+        log.debug("Neither {} nor {} is already participating in battle", userTeam.getId(), opponentTeamId);
         return mapBattleEntityToModel(
                 battleRepository.save(
                         BattleEntity.builder()
@@ -145,10 +155,12 @@ public class BattleService {
     }
 
     public Battle acceptBattle(Long battleId, AppUser user) {
+        log.info("Battle {} accepted", battleId);
         return setBattleStatus(battleId, user, BattleStatus.ACCEPTED);
     }
 
     public Battle declineBattle(Long battleId, AppUser user) {
+        log.info("Battle {} declined", battleId);
         return setBattleStatus(battleId, user, BattleStatus.DECLINED);
     }
 
@@ -156,7 +168,8 @@ public class BattleService {
         BattleEntity entity = battleRepository.findById(battle.getId())
                 .orElseThrow(() -> new NotFoundException("Battle " + battle.getId() + " not found"));
         battleRepository.save(entity.withStatus(BattleStatus.FINISHED));
-        submissionService.onBattleWon(submissionId);
+        log.info("Battle {} finished by submission {}", battle.getId(), submissionId);
+        eventPublisher.publishEvent(new BattleWonEvent(submissionId));
     }
 
     private Battle setBattleStatus(Long battleId,
@@ -181,61 +194,41 @@ public class BattleService {
                 .id(battleEntity.getId())
                 .status(battleEntity.getStatus())
                 .initiator(
-                        teamRepository.findById(battleEntity.getInitiatorId())
+                        teamService.getTeam(battleEntity.getInitiatorId())
                                 .map(this::teamToHeader)
                                 .orElse(null)
                 )
-                .defender(teamRepository.findById(battleEntity.getDefenderId())
+                .defender(teamService.getTeam(battleEntity.getDefenderId())
                         .map(this::teamToHeader)
                         .orElse(null))
                 .checkpointId(battleEntity.getCheckpointId())
                 .build();
     }
 
-    private TeamHeader teamToHeader(TeamEntity team) {
+    private TeamHeader teamToHeader(Team team) {
         return new TeamHeader(
                 team.getId(),
                 team.getName()
         );
     }
 
-    public BattleProgress getBattleProgress(Long battleId) {
-        BattleEntity battleEntity = battleRepository.findById(battleId)
-                .orElseThrow(() -> new NotFoundException("Battle " + battleId + " not found"));
-        return BattleProgress.builder()
-                .battle(mapBattleEntityToModel(battleEntity))
-                .initiatorProgress(getTeamProgress(battleEntity.getInitiatorId(), battleEntity.getCheckpointId()))
-                .defenderProgress(getTeamProgress(battleEntity.getDefenderId(), battleEntity.getCheckpointId()))
-                .build();
-    }
-
-    public BattleProgress getCurrentBattleProgress(AppUser user) {
-        return getBattleProgress(getUserBattle(user).getId());
-    }
-
-    private boolean isTeamParticipateInBattle(long teamId) {
-        return battleRepository.findByInitiatorId(teamId).stream()
-                .anyMatch(battleEntity -> battleEntity.getStatus().equals(BattleStatus.PENDING)
-                        || battleEntity.getStatus().equals(BattleStatus.ACCEPTED))
-                ||
-                battleRepository.findByDefenderId(teamId).stream()
-                        .anyMatch(battleEntity -> battleEntity.getStatus().equals(BattleStatus.PENDING)
-                                || battleEntity.getStatus().equals(BattleStatus.ACCEPTED));
+    private boolean isTeamParticipatingInBattle(long teamId) {
+        return battleRepository.findActiveBattleByTeamId(teamId).isPresent();
     }
 
     private List<StageProgress> getTeamProgress(long teamId, long targetCheckpointId) {
         long courseId = courseService.getTeamCourse(teamId).getId();
+        AtomicBoolean checkpointFound = new AtomicBoolean(false);
         return stageService.getStagesByCourse(courseId, teamId)
                 .stream()
-                .sorted(Comparator.comparingInt(Stage::getIndex))
-                .takeWhile(stage -> stage.getCheckpoint().getId().equals(targetCheckpointId))
+                .takeWhile(stage -> !checkpointFound.get())
+                .peek(stage -> checkpointFound.set(stage.getCheckpoint().getId().equals(targetCheckpointId)))
                 .map(stage -> new StageProgress(
                         stage.getName(),
-                        Optional.ofNullable(stage.getCheckpoint())
-                                .map(checkpoint -> Optional.ofNullable(checkpoint.getStatus())
-                                        .map(status -> status.equals(CheckpointSubmissionStatus.ACCEPTED))
-                                        .orElse(false))
-                                .orElse(false)))
+                        Optional.ofNullable(stage.getCheckpoint().getStatus())
+                                .map(status -> status.equals(CheckpointSubmissionStatus.ACCEPTED))
+                                .orElse(false))
+                )
                 .collect(Collectors.toList());
     }
 }

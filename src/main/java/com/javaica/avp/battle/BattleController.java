@@ -87,8 +87,9 @@ public class BattleController {
     }
 
     @GetMapping("/{battleId}/progress")
-    public BattleProgress getBattleProgress(@PathVariable Long battleId) {
-        return battleService.getBattleProgress(battleId);
+    public BattleProgress getBattleProgress(@PathVariable Long battleId,
+                                            @AuthenticationPrincipal AppUser user) {
+        return battleService.getBattleProgress(battleId, user);
     }
 
     @GetMapping("/current/progress")
