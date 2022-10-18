@@ -14,4 +14,9 @@ public class BattleProgress {
     Battle battle;
     List<StageProgress> initiatorProgress;
     List<StageProgress> defenderProgress;
+    UserTeamRole userTeamRole;
+    public enum UserTeamRole {
+        INITIATOR,
+        DEFENDER
+    }
 }

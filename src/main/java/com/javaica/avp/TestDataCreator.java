@@ -7,6 +7,8 @@ import com.javaica.avp.checkpoint.CheckpointService;
 import com.javaica.avp.checkpoint.model.Checkpoint;
 import com.javaica.avp.checkpoint.model.CheckpointBlock;
 import com.javaica.avp.checkpoint.model.CheckpointRequest;
+import com.javaica.avp.collab.Collab;
+import com.javaica.avp.collab.CollabService;
 import com.javaica.avp.common.ContentBlockType;
 import com.javaica.avp.course.Course;
 import com.javaica.avp.course.CourseRepository;
@@ -48,6 +50,7 @@ public class TestDataCreator implements CommandLineRunner {
     private final TaskService taskService;
     private final CheckpointService checkpointService;
     private final BattleService battleService;
+    private final CollabService collabService;
 
     private final CourseRepository courseRepository;
 
@@ -68,7 +71,8 @@ public class TestDataCreator implements CommandLineRunner {
                     .role(UserRole.ADMIN)
                     .build();
             userService.createUser(user);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         for (int i = 1; i <= 10; i++) {
             try {
@@ -81,7 +85,8 @@ public class TestDataCreator implements CommandLineRunner {
                         .build();
                 user = userService.createUser(user);
                 log.info("User {} created", user);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         Course course = Course.builder()
@@ -184,22 +189,22 @@ public class TestDataCreator implements CommandLineRunner {
                 .stageId(stage1.getId())
                 .index(0)
                 .blocks(List.of(
-                        TaskBlockRequest.builder()
-                                .type(ContentBlockType.TEXT)
-                                .content("the action or process of causing a group of people to work together effectively as a team, " +
-                                        "especially by means of activities and events designed to increase motivation and promote cooperation.\n" +
-                                        "\"companies are starting to turn to arts-based training programmes as a way of team building and improving morale\"")
-                                .build(),
-                        TaskBlockRequest.builder()
-                                .type(ContentBlockType.QUESTION)
-                                .content("Цhat is the most important thing when participating in a team?")
-                                .answer(mapper.readTree("\"cohesion\""))
-                                .build(),
-                        TaskBlockRequest.builder()
-                                .type(ContentBlockType.QUESTION)
-                                .content("Place in correct order: 1 - Go about your business, 2 - Discuss everything with your team")
-                                .answer(mapper.readTree("[2, 1]"))
-                                .build()
+                                TaskBlockRequest.builder()
+                                        .type(ContentBlockType.TEXT)
+                                        .content("the action or process of causing a group of people to work together effectively as a team, " +
+                                                "especially by means of activities and events designed to increase motivation and promote cooperation.\n" +
+                                                "\"companies are starting to turn to arts-based training programmes as a way of team building and improving morale\"")
+                                        .build(),
+                                TaskBlockRequest.builder()
+                                        .type(ContentBlockType.QUESTION)
+                                        .content("What is the most important thing when participating in a team?")
+                                        .answer(mapper.readTree("\"cohesion\""))
+                                        .build(),
+                                TaskBlockRequest.builder()
+                                        .type(ContentBlockType.QUESTION)
+                                        .content("Place in correct order: 1 - Go about your business, 2 - Discuss everything with your team")
+                                        .answer(mapper.readTree("[2, 1]"))
+                                        .build()
                         )
                 ).build();
         Task task1 = taskService.saveTask(taskRequest1);
@@ -211,16 +216,16 @@ public class TestDataCreator implements CommandLineRunner {
                 .stageId(stage2.getId())
                 .index(0)
                 .blocks(List.of(
-                        TaskBlockRequest.builder()
-                                .type(ContentBlockType.TEXT)
-                                .content("There are a lot of tools to plan your work - " +
-                                        "Trello, Jira, etc. You can choose any tool")
-                                .build(),
-                        TaskBlockRequest.builder()
-                                .type(ContentBlockType.QUESTION)
-                                .content("What is the most popular task tracker called?")
-                                .answer(mapper.readTree("\"jira\""))
-                                .build()
+                                TaskBlockRequest.builder()
+                                        .type(ContentBlockType.TEXT)
+                                        .content("There are a lot of tools to plan your work - " +
+                                                "Trello, Jira, etc. You can choose any tool")
+                                        .build(),
+                                TaskBlockRequest.builder()
+                                        .type(ContentBlockType.QUESTION)
+                                        .content("What is the most popular task tracker called?")
+                                        .answer(mapper.readTree("\"jira\""))
+                                        .build()
                         )
                 ).build();
         Task task2 = taskService.saveTask(taskRequest2);
@@ -252,15 +257,15 @@ public class TestDataCreator implements CommandLineRunner {
                 .stageId(stage4.getId())
                 .index(0)
                 .blocks(List.of(
-                        TaskBlockRequest.builder()
-                                .type(ContentBlockType.TEXT)
-                                .content("Marketing is the action or business of promoting and selling products or services, including market research and advertising.")
-                                .build(),
-                        TaskBlockRequest.builder()
-                                .type(ContentBlockType.QUESTION)
-                                .content("Can we increase our profit using marketing?")
-                                .answer(mapper.readTree("\"yes\""))
-                                .build()
+                                TaskBlockRequest.builder()
+                                        .type(ContentBlockType.TEXT)
+                                        .content("Marketing is the action or business of promoting and selling products or services, including market research and advertising.")
+                                        .build(),
+                                TaskBlockRequest.builder()
+                                        .type(ContentBlockType.QUESTION)
+                                        .content("Can we increase our profit using marketing?")
+                                        .answer(mapper.readTree("\"yes\""))
+                                        .build()
                         )
                 ).build();
         Task task4 = taskService.saveTask(taskRequest4);
@@ -272,19 +277,19 @@ public class TestDataCreator implements CommandLineRunner {
                 .stageId(stage5.getId())
                 .index(0)
                 .blocks(List.of(
-                        TaskBlockRequest.builder()
-                                .type(ContentBlockType.TEXT)
-                                .content("An IPO is an initial public offering. In an IPO, a privately owned company " +
-                                        "lists its shares on a stock exchange, making them available for purchase by " +
-                                        "the general public. Many people think of IPOs as big money-making " +
-                                        "opportunities—high-profile companies grab headlines with huge share price " +
-                                        "gains when they go public.")
-                                .build(),
-                            TaskBlockRequest.builder()
-                                    .type(ContentBlockType.QUESTION)
-                                    .content("Is an MVP suitable for entering the IPO?")
-                                    .answer(mapper.readTree("\"no\""))
-                                    .build()
+                                TaskBlockRequest.builder()
+                                        .type(ContentBlockType.TEXT)
+                                        .content("An IPO is an initial public offering. In an IPO, a privately owned company " +
+                                                "lists its shares on a stock exchange, making them available for purchase by " +
+                                                "the general public. Many people think of IPOs as big money-making " +
+                                                "opportunities—high-profile companies grab headlines with huge share price " +
+                                                "gains when they go public.")
+                                        .build(),
+                                TaskBlockRequest.builder()
+                                        .type(ContentBlockType.QUESTION)
+                                        .content("Is an MVP suitable for entering the IPO?")
+                                        .answer(mapper.readTree("\"no\""))
+                                        .build()
                         )
                 ).build();
         Task task5 = taskService.saveTask(taskRequest5);
@@ -383,7 +388,7 @@ public class TestDataCreator implements CommandLineRunner {
 
         log.info("Battle {} created", battle1);
 
-        battleService.acceptBattle(battle1.getId(), users.get(team.getMembers().get(0)));
+        battleService.declineBattle(battle1.getId(), users.get(team.getMembers().get(0)));
 
         Battle battle2 = battleService.initiateBattle(
                 team.getId(),
@@ -392,5 +397,19 @@ public class TestDataCreator implements CommandLineRunner {
         );
 
         log.info("Battle {} created", battle2);
+
+        battleService.acceptBattle(battle2.getId(), users.get("admin"));
+        log.info("Battle {} accepted", battle2.getId());
+
+        Collab collab1 = collabService.requestCollab(
+                team.getId(),
+                users.get("user3")
+        );
+
+        log.info("Collab {} created", collab1);
+
+        collabService.acceptCollab(collab1.getId(), users.get("admin"));
+
+        log.info("Collab {} accepted by user {}", collab1, users.get("admin"));
     }
 }

@@ -78,6 +78,10 @@ public class TeamService {
                 .collect(Collectors.toList());
     }
 
+    public boolean teamExists(long id) {
+        return teamRepository.existsById(id);
+    }
+
     private TeamEntity modelToEntity(long groupId, Team team) {
         return TeamEntity.builder()
                 .id(team.getId())

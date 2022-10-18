@@ -1,7 +1,7 @@
 package com.javaica.avp.submission;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.javaica.avp.battle.BattleService;
+import com.javaica.avp.battle.BattleWonEvent;
 import com.javaica.avp.checkpoint.CheckpointBlockRepository;
 import com.javaica.avp.checkpoint.CheckpointRepository;
 import com.javaica.avp.common.ContentBlockType;
@@ -18,6 +18,8 @@ import com.javaica.avp.user.AppUser;
 import com.javaica.avp.util.JsonNodeAnswerComparator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +35,6 @@ import java.util.stream.Collectors;
 public class SubmissionService {
 
     private final AccessService accessService;
-    private final BattleService battleService;
     private final TaskRepository taskRepository;
     private final CheckpointRepository checkpointRepository;
     private final TaskBlockRepository blockRepository;
@@ -42,6 +43,7 @@ public class SubmissionService {
     private final TaskSubmissionAnswerRepository taskSubmissionAnswerRepository;
     private final CheckpointSubmissionRepository checkpointSubmissionRepository;
     private final CheckpointSubmissionAnswerRepository checkpointSubmissionAnswerRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public TaskSubmissionResult submitTask(long taskId, Map<String, JsonNode> submission, AppUser user) {
@@ -127,13 +129,14 @@ public class SubmissionService {
                 .withStatus(review.getStatus())
                 .withPoints(review.getPoints())));
 
-        battleService.onSubmissionReview(result);
+        eventPublisher.publishEvent(result);
 
         return result;
     }
 
-    public void onBattleWon(long submissionId) {
-        checkpointSubmissionRepository.updateCheckpointSubmissionOnBattleWon(submissionId);
+    @EventListener
+    public void onBattleWon(BattleWonEvent event) {
+        checkpointSubmissionRepository.updateCheckpointSubmissionOnBattleWon(event.getSubmissionId());
     }
 
     public Integer getTaskPoints(long taskId) {

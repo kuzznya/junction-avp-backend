@@ -22,10 +22,11 @@ public class StageService {
 
     private final AccessService accessService;
     private final CourseService courseService;
-    private final StageRepository stageRepository;
-    private final CourseRepository courseRepository;
     private final TaskService taskService;
     private final CheckpointService checkpointService;
+
+    private final StageRepository stageRepository;
+    private final CourseRepository courseRepository;
 
     public List<StageHeader> getCurrentStageHeaders(AppUser user) {
         return getStageHeaders(courseService.getCurrentCourse(user).getId(), user);
