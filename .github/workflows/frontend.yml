@@ -23,8 +23,8 @@ jobs:
         working-directory: frontend-admin
       - name: Login with docker
         run: >
-          echo ${{ secrets.GITLAB_TOKEN }} | docker login --username kuzznya
-          --password-stdin registry.gitlab.com/kuzznya
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login --username kuzznya
+          --password-stdin ghcr.io/kuzznya
       - name: Publish container
         run: docker push ghcr.io/kuzznya/junction-avp-backend/frontend-admin:latest
 
