@@ -19,7 +19,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: backend
+                name: frontend-admin
                 port:
                   number: 80
 
