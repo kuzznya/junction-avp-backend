@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -52,10 +53,12 @@ public class TaskService {
         List<TaskEntity> taskEntities = taskRepository.findAllByStageIdOrderByIndex(taskRequest.getStageId());
         Integer index = Optional
                 .ofNullable(taskRequest.getIndex())
-                .orElseGet(() -> taskEntities.stream()
-                        .mapToInt(TaskEntity::getIndex)
-                        .max()
-                        .orElse(0));
+                .orElseGet(() -> {
+                    var maxIndex = taskEntities.stream()
+                            .mapToInt(TaskEntity::getIndex)
+                            .max();
+                    return maxIndex.isPresent() ? maxIndex.getAsInt() + 1 : 0;
+                });
         taskRepository.saveAll(
                 taskEntities.stream()
                         .filter(task -> task.getIndex() >= index)
@@ -73,7 +76,16 @@ public class TaskService {
     }
 
     public void deleteTask(long taskId) {
+        Optional<TaskEntity> taskOptional = taskRepository.findById(taskId);
         taskRepository.deleteById(taskId);
+        if (taskOptional.isEmpty())
+            return;
+        AtomicInteger idx = new AtomicInteger(0);
+        List<TaskEntity> tasks = taskRepository.findAllByStageIdOrderByIndex(taskOptional.get().getStageId())
+                .stream()
+                .map(task -> task.withIndex(idx.getAndIncrement()))
+                .collect(Collectors.toList());
+        taskRepository.saveAll(tasks);
     }
 
     private Task mapTaskEntityToModel(TaskEntity taskEntity) {
