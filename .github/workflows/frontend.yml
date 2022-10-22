@@ -1,11 +1,11 @@
-name: Build client
+name: Build frontend-admin
 
 on:
   push:
     branches:
       - master
     paths:
-      - front-admin/**
+      - frontend-admin/**
       - .github/workflows/frontend.yml
   workflow_dispatch:
 
@@ -16,11 +16,23 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build container
         run: >
-          docker build -t registry.gitlab.com/kuzznya/junction-avp-frontend:latest .
-        working-directory: front-admin
+          docker build -t ghcr.io/kuzznya/junction-avp-backend/frontend-admin:latest .
+        working-directory: frontend-admin
       - name: Login with docker
         run: >
           echo ${{ secrets.GITLAB_TOKEN }} | docker login --username kuzznya
           --password-stdin registry.gitlab.com/kuzznya
       - name: Publish container
-        run: docker push registry.gitlab.com/kuzznya/junction-avp-frontend:latest
+        run: docker push ghcr.io/kuzznya/junction-avp-backend/frontend-admin:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Prepare .kube directory
+        run: mkdir ~/.kube || echo "Cannot create ~/.kube directory, skipping"
+      - name: Prepare kubeconfig
+        run: echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+      - name: Deploy to Kubernetes
+        run: kubectl rollout restart deployment frontend-admin --namespace junction
