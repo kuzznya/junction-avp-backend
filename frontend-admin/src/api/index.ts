@@ -2,7 +2,7 @@ import * as api from "@/api/generated";
 import {useAuth} from "@/stores/auth";
 
 const config = new api.Configuration({
-  basePath: "https://junction.kuzznya.space",
+  basePath: "https://junction.kuzznya.com",
   accessToken: () => {
     const auth = useAuth()
     if (!auth.isAuthenticated || auth.token == null)
