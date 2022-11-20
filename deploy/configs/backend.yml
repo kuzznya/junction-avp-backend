@@ -3,19 +3,28 @@ kind: Ingress
 metadata:
   name: backend-ingress
   annotations:
+    ingressClassName: "traefik"
+    kubernetes.io/ingress.class: "traefik"
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   tls:
-    - secretName: main-tls
+    - secretName: junction-tls
       hosts:
-        - junction.kuzznya.space
+        - junction.kuzznya.com
   rules:
-    - host: junction.kuzznya.space
+    - host: junction.kuzznya.com
       http:
         paths:
           - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 80
+          - path: /actuator/health
             pathType: Prefix
             backend:
               service:
