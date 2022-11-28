@@ -398,6 +398,9 @@ public class TestDataCreator implements CommandLineRunner {
 
         log.info("Battle {} created", battle2);
 
+        battleService.acceptBattle(battle2.getId(), users.get("admin"));
+        log.info("Battle {} accepted", battle2.getId());
+
         Collab collab1 = collabService.requestCollab(
                 team.getId(),
                 users.get("user3")

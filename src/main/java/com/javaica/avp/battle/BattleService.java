@@ -2,6 +2,7 @@ package com.javaica.avp.battle;
 
 import com.javaica.avp.course.CourseService;
 import com.javaica.avp.exception.BadRequestException;
+import com.javaica.avp.exception.ForbiddenException;
 import com.javaica.avp.exception.NotFoundException;
 import com.javaica.avp.security.AccessService;
 import com.javaica.avp.stage.StageProgress;
@@ -16,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,7 +57,7 @@ public class BattleService {
 
     public Battle getUserBattle(AppUser user) {
         GradedTeamProjection userTeam = teamService.getTeamOfUser(user)
-                .orElseThrow(() -> new AccessDeniedException("No team found for user " + user.getUsername()));
+                .orElseThrow(() -> new NotFoundException("No team found for user " + user.getUsername()));
         return battleRepository
                 .findAllByInitiatorIdOrDefenderId(userTeam.getId(), userTeam.getId()).stream()
                 .filter(battleEntity -> battleEntity.getStatus().equals(BattleStatus.PENDING) ||
@@ -92,10 +92,10 @@ public class BattleService {
         if (user.getRole() == UserRole.ADMIN)
             return battle;
         GradedTeamProjection team = teamService.getTeamOfUser(user)
-                .orElseThrow(() -> new AccessDeniedException("No team found for user " + user.getUsername()));
+                .orElseThrow(() -> new NotFoundException("No team found for user " + user.getUsername()));
 
         if (!battle.getDefender().getId().equals(team.getId()) || !battle.getInitiator().getId().equals(team.getId()))
-            throw new AccessDeniedException("Cannot access battle " + battleId);
+            throw new ForbiddenException("Cannot access battle " + battleId);
         return battle;
     }
 
@@ -127,11 +127,11 @@ public class BattleService {
     @Transactional
     public Battle initiateBattle(Long opponentTeamId, Long checkpointId, AppUser user) {
         if (!accessService.userHasAccessToCheckpoint(checkpointId, user))
-            throw new AccessDeniedException("Cannot access checkpoint " + checkpointId);
+            throw new ForbiddenException("Cannot access checkpoint " + checkpointId);
         GradedTeamProjection userTeam = teamService.getTeamOfUser(user)
-                .orElseThrow(() -> new AccessDeniedException("User does not belong to any team"));
+                .orElseThrow(() -> new ForbiddenException("User does not belong to any team"));
         if (userTeam.getId().equals(opponentTeamId))
-            throw new AccessDeniedException("Cannot initiate battle with the same team");
+            throw new ForbiddenException("Cannot initiate battle with the same team");
         if (!teamService.teamExists(opponentTeamId))
             throw new NotFoundException("Team " + opponentTeamId + " not found");
         if (!courseService.getTeamCourse(opponentTeamId).getId()
@@ -178,11 +178,11 @@ public class BattleService {
         BattleEntity battle = battleRepository.findById(battleId)
                 .orElseThrow(() -> new NotFoundException("Battle " + battleId + " not found"));
         if (!battle.getStatus().equals(BattleStatus.PENDING))
-            throw new AccessDeniedException(
+            throw new ForbiddenException(
                     "Cannot set " + status.toString().toLowerCase() +
                             " status, battle is already " + battle.getStatus().toString().toLowerCase());
         if (!user.getTeamId().equals(battle.getDefenderId())) {
-            throw new AccessDeniedException("Cannot accept battle");
+            throw new ForbiddenException("Cannot accept battle");
         }
         return mapBattleEntityToModel(
                 battleRepository.save(battle.withStatus(status)));

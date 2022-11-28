@@ -33,7 +33,7 @@ public class AdminStageController {
 
     @DeleteMapping("/{stageId}")
     @Operation(
-            summary = "Create stage",
+            summary = "Delete stage",
             security = @SecurityRequirement(name = "bearerAuth"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK"),
