@@ -19,10 +19,10 @@ function newTask() {
   router.push({ name: 'newTask', params: {stageId: props.stageId} })
 }
 
-function onTaskClick(taskId?: number) {
+async function onTaskClick(taskId?: number) {
   if (taskId == null)
     return
-  alert("not implemented")
+  await router.push({ name: 'task', params: {taskId: taskId} })
 }
 
 function onDeleteClick(task: Task) {
