@@ -28,7 +28,7 @@ function allDataProvided(): boolean {
     blocks.value.every(block =>
       block.type != null &&
       blockTypeOptions.indexOf(block.type) >= 0 &&
-      block.content.length > 0 && (block.type == 'TEXT' || block.answer != null)
+      block.content.length > 0 && (block.type == 'TEXT' || true /*block.answer != null*/)
     ) // TODO 22.10 add check that answer is filled, currently impossible because answer type is object, not string
 }
 
@@ -47,10 +47,6 @@ function deleteBlock(index: number) {
 }
 
 async function createTask() {
-  blocks.value.forEach(block => {
-    if (block.answer != null) // @ts-ignore TODO fix answer type
-      block.answer = JSON.stringify(block.answer)
-  })
   try {
     await api.AdminTaskControllerApi.createNewTask({
       stageId: props.stageId,
@@ -62,11 +58,6 @@ async function createTask() {
   } catch (e) {
     error.value = e instanceof Error ? e : e as string;
   }
-}
-
-// @ts-ignore TODO remove
-function blockAnswer(block): string {
-  return block.answer
 }
 </script>
 
@@ -115,7 +106,7 @@ function blockAnswer(block): string {
           <b-form-input :id="'block-content-' + index" v-model="block.content"/>
 
           <label :for="'block-answer-' + index" v-if="block.type === 'QUESTION'">Answer:</label>
-          <b-form-input :id="'block-answer-' + index"  :v-model="blockAnswer(block)" v-if="block.type === 'QUESTION'"/>
+          <b-form-input :id="'block-answer-' + index"  v-model="block.answer as string | number | undefined" v-if="block.type === 'QUESTION'"/>
         </b-card>
       </b-col>
     </b-row>
