@@ -24,4 +24,5 @@ public class ByteArrayToJsonNodeConverter implements Converter<byte[], JsonNode>
             throw new IllegalArgumentException("Cannot convert byte array to JsonNode", e);
         }
     }
+
 }
