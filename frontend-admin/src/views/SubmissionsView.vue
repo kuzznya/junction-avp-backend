@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import api from "@/api";
 import {ref} from "vue";
-import {CheckpointSubmissionResult} from "@/api/generated";
+import {CheckpointReview, CheckpointSubmissionResult} from "@/api/generated";
 
 const props = defineProps<{checkpointId: number}>()
 
@@ -41,6 +41,12 @@ async function sendReview(submissionId: number | undefined) {
     return
   const idx = submissions.value.findIndex(s => s.id == submissionId)
   try {
+    const submission: CheckpointReview = {
+      review: reviews[idx].review.value,
+      status: reviews[idx].accepted.value ? 'ACCEPTED' : 'DECLINED',
+    }
+    if (reviews[idx].accepted.value)
+      submission.points = reviews[idx].points.value
     await api.AdminCheckpointControllerApi.submitReview(submissionId, {
       review: reviews[idx].review.value,
       status: reviews[idx].accepted.value ? 'ACCEPTED' : 'DECLINED',
@@ -51,6 +57,18 @@ async function sendReview(submissionId: number | undefined) {
   } catch (e) {
     console.log("fuck")
   }
+}
+
+function updateReview(idx: number, val: string) {
+  reviews[idx].review.value = val
+}
+
+function updateAccepted(idx: number, val: boolean) {
+  reviews[idx].accepted.value = val
+}
+
+function updatePoints(idx: number, val: number) {
+  reviews[idx].points.value = val
 }
 </script>
 
@@ -79,13 +97,13 @@ async function sendReview(submissionId: number | undefined) {
           <b-row class="border-top mt-3" v-if="submission.status === 'IN_REVIEW'">
             <b-col>
               <label :for="`review-input-${idx}`">Review:</label>
-              <b-form-input :id="`review-input-${idx}`" :model-value="reviews[idx].review.value" @update:model-value="val => reviews[idx].review.value = val"></b-form-input>
+              <b-form-input :id="`review-input-${idx}`" :model-value="reviews[idx].review.value" @update:model-value="val => updateReview(idx, val)"></b-form-input>
 
               <label :for="`accepted-input-${idx}`">Accepted:</label>
-              <b-form-checkbox :id="`accepted-input-${idx}`" v-model="reviews[idx].accepted"></b-form-checkbox>
+              <b-form-checkbox :id="`accepted-input-${idx}`" :model-value="reviews[idx].accepted" @update:model-value="val => updateAccepted(idx, val)"></b-form-checkbox>
 
               <label :for="`points-input-${idx}`">Points:</label>
-              <b-form-input type="number" :id="`points-input-${idx}`" :model-value="reviews[idx].points.value" @update:model-value="val => reviews[idx].points.value = val" v-if="reviews[idx].accepted"></b-form-input>
+              <b-form-input type="number" :id="`points-input-${idx}`" :model-value="reviews[idx].points.value" @update:model-value="val => updatePoints(idx, val)" v-if="reviews[idx].accepted"></b-form-input>
 
               <b-button variant="primary" @click="sendReview(submission.id)">Review</b-button>
             </b-col>
@@ -93,14 +111,11 @@ async function sendReview(submissionId: number | undefined) {
 
           <b-row class="botder-top mt-3" v-else>
             <b-col>
-              <label for="review">Review:</label>
-              <p id="review">Review: {{ submission.review }}</p>
+              <p>Review: {{ submission.review }}</p>
 
-              <label for="accepted">Accepted:</label>
-              <b-form-checkbox id="accepted" :model-value="submission.status === 'ACCEPTED'" disabled></b-form-checkbox>
+              <p>Accepted: <b-form-checkbox class="d-inline-block" :id="`accepted-${idx}`" :model-value="submission.status === 'ACCEPTED'" disabled/></p>
 
-              <label for="points">Points:</label>
-              <p id="points" v-if="submission.status === 'ACCEPTED'">Points: {{ submission.points }}</p>
+              <p v-if="submission.status === 'ACCEPTED'">Points: {{ submission.points }}</p>
             </b-col>
           </b-row>
         </b-card>
