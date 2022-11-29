@@ -83,6 +83,27 @@ async function deleteTask() {
     >
       <p>Are you sure want to delete task "{{ taskToDelete?.name }}"</p>
     </b-modal>
+
+    <h3 class="mt-3">Checkpoint:</h3>
+    <b-row v-if="stage.checkpoint != null">
+      <b-col>
+        <b-card class="my-2">
+          <b-row>
+            <b-col>
+              <b-card-title>{{ stage.checkpoint?.name }}</b-card-title>
+            </b-col>
+          </b-row>
+
+          <b-card-text>{{ stage.checkpoint?.description }}</b-card-text>
+
+          <b-row>
+            <b-col>
+              <b-button variant="primary" :to="{name: 'submissions', params: {checkpointId: stage.checkpoint?.id}}">Submissions</b-button>
+            </b-col>
+          </b-row>
+        </b-card>
+      </b-col>
+    </b-row>
   </b-container>
 </template>
 

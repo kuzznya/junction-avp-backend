@@ -4,6 +4,7 @@ import CourseView from '@/views/CourseView.vue'
 import StageView from '@/views/StageView.vue'
 import NewTaskView from '@/views/NewTaskView.vue'
 import TaskView from '@/views/TaskView.vue'
+import SubmissionsView from '@/views/SubmissionsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,6 +37,12 @@ const router = createRouter({
       name: 'task',
       component: TaskView,
       props: route => ({taskId: Number.parseInt(route.params.taskId as string)})
+    },
+    {
+      path: '/checkpoints/:checkpointId/submissions',
+      name: 'submissions',
+      component: SubmissionsView,
+      props: route => ({checkpointId: Number.parseInt(route.params.checkpointId as string)})
     }
   ]
 })
