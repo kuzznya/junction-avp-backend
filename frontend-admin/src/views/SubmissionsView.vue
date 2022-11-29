@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import api from "@/api";
 import {ref} from "vue";
+import {CheckpointSubmissionResult} from "@/api/generated";
 
 const props = defineProps<{checkpointId: number}>()
 
@@ -9,7 +10,7 @@ const checkpoint = await api.CheckpointControllerApi.getStageCheckpoint(props.ch
 const submissions = await api.AdminCheckpointControllerApi.getSubmissions(props.checkpointId).then(r => r.data)
   .then(data => ref(data))
 
-const teamNames = ref<{[id: number] : string}>()
+const teamNames = ref<{[id: number] : string}>({})
 
 async function fetchTeamNames() {
   const newValue: {[id: number] : string} = {}
@@ -25,13 +26,19 @@ async function fetchTeamName(teamId: number) {
 
 await fetchTeamNames()
 
-const reviews = submissions.value.map(submission => ({
-  review: ref<string>(submission.review ?? ''),
-  accepted: ref<boolean>(submission.status === 'ACCEPTED'),
-  points: ref<number>(submission.points ?? 0)
+const reviews = submissions.value.map(() => ({
+  review: ref(''),
+  accepted: ref(false),
+  points: ref(0)
 }))
 
-async function sendReview(submissionId: number) {
+function getAnswer(submission: CheckpointSubmissionResult, blockId: number | undefined) {
+  return (submission.content || {})[blockId ?? 0] ?? '[not provided]'
+}
+
+async function sendReview(submissionId: number | undefined) {
+  if (submissionId == undefined)
+    return
   const idx = submissions.value.findIndex(s => s.id == submissionId)
   try {
     await api.AdminCheckpointControllerApi.submitReview(submissionId, {
@@ -56,7 +63,7 @@ async function sendReview(submissionId: number) {
         <b-card v-for="(submission, idx) in submissions" class="my-2 b-card-clickable">
           <b-row>
             <b-col>
-              <b-card-title>{{ teamNames[submission.teamId] ?? '[failed to fetch name]' }}</b-card-title>
+              <b-card-title>{{ teamNames[submission?.teamId ?? 0] ?? '[failed to fetch name]' }}</b-card-title>
             </b-col>
           </b-row>
 
@@ -64,21 +71,21 @@ async function sendReview(submissionId: number) {
             <b-col class="border-top">
               <b-card-text>{{ block.content }}</b-card-text>
               <b-card-text v-if="block.type === 'QUESTION'">
-                Answer: {{ submission.content[block.id] ?? '[not provided]' }}
+                Answer: {{ getAnswer(submission, block.id) }}
               </b-card-text>
             </b-col>
           </b-row>
 
           <b-row class="border-top mt-3" v-if="submission.status === 'IN_REVIEW'">
             <b-col>
-              <label for="review-input">Review:</label>
-              <b-form-input id="review-input" v-model="reviews[idx].review"></b-form-input>
+              <label :for="`review-input-${idx}`">Review:</label>
+              <b-form-input :id="`review-input-${idx}`" :model-value="reviews[idx].review.value" @update:model-value="val => reviews[idx].review.value = val"></b-form-input>
 
-              <label for="accepted-input">Accepted:</label>
-              <b-form-checkbox id="accepted-input" v-model="reviews[idx].accepted"></b-form-checkbox>
+              <label :for="`accepted-input-${idx}`">Accepted:</label>
+              <b-form-checkbox :id="`accepted-input-${idx}`" v-model="reviews[idx].accepted"></b-form-checkbox>
 
-              <label for="points-input">Points:</label>
-              <b-form-input type="number" id="points-input" v-model="reviews[idx].points" v-if="reviews[idx].accepted"></b-form-input>
+              <label :for="`points-input-${idx}`">Points:</label>
+              <b-form-input type="number" :id="`points-input-${idx}`" :model-value="reviews[idx].points.value" @update:model-value="val => reviews[idx].points.value = val" v-if="reviews[idx].accepted"></b-form-input>
 
               <b-button variant="primary" @click="sendReview(submission.id)">Review</b-button>
             </b-col>
